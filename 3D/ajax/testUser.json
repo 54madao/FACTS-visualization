@@ -1,0 +1,28 @@
+{
+  "User": [
+    {
+      "userId": "0",
+      "userName": "WENBO GUO",
+      "accName": "wenbog@uw.edu",
+      "password": "Wenbo@1990"
+    },
+    {
+      "userId": "1",
+      "userName": "XIAOLIN MA",
+      "accName": "jdbxwyx@uw.edu",
+      "password": "jdbxwyx"
+    },
+    {
+      "userId": "2",
+      "userName": "Dexter HU",
+      "accName": "dexterhu@uw.edu",
+      "password": "dexterhu"
+    },
+    {
+      "userId": "3",
+      "userName": "Administrator",
+      "accName": "admin@uw.edu",
+      "password": "admin"
+    }
+  ]
+}
