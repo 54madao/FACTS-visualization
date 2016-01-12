@@ -29,8 +29,8 @@ function onDocumentMouseMove( event ) {
                 material = INTERSECTED.material;
                 if(material.emissive){
                     material.emissive.setHex(INTERSECTED.currentHex);
-                    scene.remove(rightline);
-                    scene.remove(leftline);
+                    //scene.remove(rightline);
+                    //scene.remove(leftline);
                 }
             }   
             INTERSECTED = intersects[0].object;
@@ -39,22 +39,22 @@ function onDocumentMouseMove( event ) {
                 INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
                 material.emissive.setHex(0xff00ff);
 
-                // to right
-                var right_line_geometry = new THREE.Geometry();
-                right_line_geometry .vertices.push(INTERSECTED.position);
-                right_line_geometry .vertices.push(new THREE.Vector3(1000, Math.random() * 500, 0));
-                //line.geometry.vertices.push(new THREE.Vector3(-500, 20, 100));
-                rightline = new THREE.Line(right_line_geometry, direct_line_material);
-                scene.add(rightline);
+                // // to right
+                // var right_line_geometry = new THREE.Geometry();
+                // right_line_geometry .vertices.push(INTERSECTED.position);
+                // right_line_geometry .vertices.push(new THREE.Vector3(1000, Math.random() * 500, 0));
+                // //line.geometry.vertices.push(new THREE.Vector3(-500, 20, 100));
+                // rightline = new THREE.Line(right_line_geometry, direct_line_material);
+                // scene.add(rightline);
 
-                // to left
+                // // to left
 
-                var left_line_geometry = new THREE.Geometry();
-                left_line_geometry.vertices.push(INTERSECTED.position);
-                left_line_geometry.vertices.push(new THREE.Vector3(-1000, Math.random() * 500, 0));
-                //line.geometry.vertices.push(new THREE.Vector3(-500, 20, 100));
-                leftline = new THREE.Line(left_line_geometry, direct_line_material);
-                scene.add(leftline);
+                // var left_line_geometry = new THREE.Geometry();
+                // left_line_geometry.vertices.push(INTERSECTED.position);
+                // left_line_geometry.vertices.push(new THREE.Vector3(-1000, Math.random() * 500, 0));
+                // //line.geometry.vertices.push(new THREE.Vector3(-500, 20, 100));
+                // leftline = new THREE.Line(left_line_geometry, direct_line_material);
+                // scene.add(leftline);
             }
             console.log("length: " + intersects.length);
             console.log(INTERSECTED.position);
@@ -67,12 +67,43 @@ function onDocumentMouseMove( event ) {
 
             if(material.emissive){
                 material.emissive.setHex(INTERSECTED.currentHex);
-                scene.remove(rightline);
-                scene.remove(leftline);
+                // scene.remove(rightline);
+                // scene.remove(leftline);
             }
         }
 
         INTERSECTED = null;
 
     }
+}
+
+function onDocumentMouseDown( event ) {
+
+    event.preventDefault();
+    console.log("position: " + event.clientX + ", "+ event.clientY);
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    console.log("position: " + mouse.x + ", "+ mouse.y);
+    //raycaster.setFromCamera( mouse, camera );
+
+    var particleMaterialBlue = new THREE.SpriteMaterial( {
+        color: 0x0000FF,
+    } );
+    var particle = new THREE.Sprite( particleMaterialBlue );
+
+    var tmp = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+    tmp.unproject(camera);
+    console.log("position: " + tmp.x + ", "+ tmp.y + ", "+ tmp.z);
+    tmp.sub( camera.position );
+    console.log("position: " + tmp.x + ", "+ tmp.y + ", "+ tmp.z);
+    tmp.normalize();
+    console.log("position: " + tmp.x + ", "+ tmp.y + ", "+ tmp.z);
+    var scale = window.innerWidth*2;
+    var rayDir = new THREE.Vector3(tmp.x*scale,tmp.y*scale,tmp.z*scale);
+    var rayVector = new THREE.Vector3(camera.position.x + rayDir.x, camera.position.y + rayDir.y, camera.position.z + rayDir.z);
+
+    particle.position.copy(rayVector) ;
+    particle.scale.x = particle.scale.y = 16;
+    scene.add( particle );
+
 }

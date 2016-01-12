@@ -7,45 +7,50 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="js/jstree/dist/themes/default/style.min.css" />
         <style type="text/css">
-            #canvas{
-                display: block;
-                margin: 0 auto;
+            .list { color: ffff; 
+                    font-weight: bold; 
+                    font-size: 12px; 
+                    z-index: 100; 
+                    width: 200px; 
+                    position: absolute; 
+                    top: 0px; 
+                    padding: 16px; }
+            .left { left: 0px; }
+            .right { right: 0px;}
+            #info {
+                color: ffff;
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
             }
-            .list { color: ffff; font-weight: bold; font-size: 12px; z-index: 100; width: 75px; position: absolute; top: 0px; padding: 16px; }
         </style>
     </head>        
 
     <body>
-        <div id="3d">
-            <!--<div class="row">
-                <div class="col-md-2 list">
-                    <p>
-                        List of changes
-                    </p>
-                    <ul style="list-style-type:circle">
-                        <li>Change1</li>
-                        <li>Change2</li>
-                        <li>Change3</li>
-                    </ul>
-                </div>
-
-                <div  class="col-md-8 list">
-                </div>
         
-               <div class="col-md-2 list">
-                    <p>
-                        List of docs
-                    </p>
-                    <ul style="list-style-type:circle">
-                        <li>Doc1</li>
-                        <li>Doc2</li>
-                        <li>Doc3</li>
-                    </ul>
-                </div>
-            </div>-->
+        <div id="3d">
+            <div class="list left" id="changes">                
+<!--                     <span>List of changes</span>                
+                <ul id="left_list" style="list-style-type:circle">
+                </ul> -->
+            </div>
+    
+           <div class="list right">
+                    <span>List of docs </span>      
+                <ul id="right_list" style="list-style-type:circle">
+
+                </ul>
+            </div>
         </div>
+        <div id="info"><span id="version1">version1</span><span> | </span><span id="version2">version2</span>
+        </div>
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+        <script src="js/jstree/dist/jstree.min.js"></script>
 
         <script src="js/three/build/three.js"></script>
         <script src="js/three/build/js/controls/OrbitControls.js"></script>
@@ -74,7 +79,7 @@
             var container, stats;
             var camera, controls, scene, renderer;
             var objects = [], plane, group;
-
+            var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
             offset = new THREE.Vector3(),
@@ -100,7 +105,10 @@
                 weight = "bold", // normal bold
                 style = "normal"; // normal italic
 
-            loadFiles();
+            var fileData, linkData, docData;
+
+            fileData = loadFiles();
+            console.log(JSON.stringify(fileData, null, 4));
             init();
             animate();
 
@@ -133,11 +141,11 @@
                 light.shadowMapHeight = 2048;
                 scene.add( light );
 
-                var size = 500, step = 50; //calculated based on size of dataset
+                //var size = 500, step = 50; //calculated based on size of dataset
                 // create a base
-                createBase(size, step);
+                createBase(fileData);
 
-                createCity(size);
+                createCity(fileData);
 
                
                 // plane = new THREE.Mesh(
@@ -170,6 +178,22 @@
 
                 // add listener
                 window.addEventListener( 'resize', onWindowResize, false );
+                //document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+
+
+                
+                // var dir = canvasPosition.sub( camera.position ).normalize();
+                // var distance = - camera.position.z / dir.z;
+                // var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
+                // paintPoint(pos);
+                // var particleMaterialGreen = new THREE.SpriteMaterial( {
+                //     color: 0x0000FF,
+                // } );
+                // cameraPoint = new THREE.Sprite( particleMaterialGreen );
+                // var cameraPosition = new THREE.Vector3(camera.x + 10, camera.y + 10, camera.z + 10);
+                // cameraPoint.scale.x = cameraPoint.scale.y = 50;
+                // cameraPoint.position.copy(cameraPosition);
+                // scene.add(cameraPoint);
 
             }
 
@@ -187,9 +211,22 @@
             function render() {
 
                 controls.update();
-
                 renderer.render( scene, camera );
 
+
+                // //to canvas space
+                // var worldPosition = $('#changes').position();
+                // var px = worldPosition.left + $('#changes').width();
+                // var py = worldPosition.top + $('#changes').height() / 2;
+                
+                // //console.log("position: " + px + ", "+ py);
+                // xx = ( 168 / window.innerWidth ) * 2 - 1;
+                // yy = - ( 44 / window.innerHeight ) * 2 + 1;
+                // //console.log("position: " + xx + ", "+ yy);
+                // var tmp = new THREE.Vector3(xx, yy, 0.5);
+                // tmp.unproject(camera).sub( camera.position ).normalize();
+                // //console.log("position: " + tmp.x + ", "+ tmp.y + ", "+ tmp.z);
+                // paintPoint(tmp);
             }
             
         </script>
