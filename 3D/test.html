@@ -13,10 +13,10 @@
                     font-weight: bold; 
                     font-size: 12px; 
                     z-index: 100; 
-                    width: 200px; 
                     position: absolute; 
                     top: 0px; 
-                    padding: 16px; }
+                    padding: 16px;
+            }
             .left { left: 0px; }
             .right { right: 0px;}
             #info {
@@ -26,29 +26,52 @@
                 width: 100%;
                 text-align: center;
             }
+            #changes{
+                height: 500px;
+                max-height: 500px;
+                border-right-style: groove;
+                border-bottom-style: groove;
+                overflow: auto;
+            }
+            #docs{
+                height: 500px;
+                max-height: 500px;
+                border-right-style: groove;
+                border-bottom-style: groove;
+                overflow: auto;
+            }
         </style>
     </head>        
 
     <body>
-        
+        <div class="list left"> 
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#changes" aria-controls="changes" role="tab" data-toggle="tab">ChangedSourceCode</a></li>
+                <li role="presentation"><a href="#docs" aria-controls="docs" role="tab" data-toggle="tab">ChangedDocuments</a></li>
+            </ul>
+            
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="changes">
+                        
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="docs">
+                  
+                </div>
+            </div>
+        </div>
+        <div id="details" class="list right">
+        <span>Details</span>
+        </div>
         <div id="3d">
-            <div class="list left" id="changes">                
-<!--                     <span>List of changes</span>                
-                <ul id="left_list" style="list-style-type:circle">
-                </ul> -->
-            </div>
-    
-           <div class="list right">
-                    <span>List of docs </span>      
-                <ul id="right_list" style="list-style-type:circle">
 
-                </ul>
-            </div>
         </div>
         <div id="info"><span id="version1">version1</span><span> | </span><span id="version2">version2</span>
         </div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
         <script src="js/jstree/dist/jstree.min.js"></script>
 

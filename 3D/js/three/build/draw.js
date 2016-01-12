@@ -34,7 +34,7 @@ function createCity(data){
         var num = data.codeChangedPackagesList[i].codeChangedFileList.length;
         var block_length = Math.ceil(Math.sqrt(num)) * 2 * 10;
         var block_width = Math.ceil(Math.sqrt(num)) * 2 * 10;
-        var block_height = 3;
+        var block_height = 0;
         var block = new THREE.BoxGeometry( block_length, block_height, block_width );
         var block_material = new THREE.MeshLambertMaterial( { color: 0xffffff, overdraw: 0.5 } );
 
