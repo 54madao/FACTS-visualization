@@ -8,11 +8,14 @@
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="js/jstree/dist/themes/default/style.min.css" />
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.css"/>
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.theme.css"/>
         <style type="text/css">
             .list { color: ffff; 
                     font-weight: bold; 
                     font-size: 12px; 
-                    z-index: 100; 
+                    z-index: 100;
+                    width: 350px; 
                     position: absolute; 
                     top: 0px; 
                     padding: 16px;
@@ -40,6 +43,18 @@
                 border-bottom-style: groove;
                 overflow: auto;
             }
+/*            #details{
+                height: 500px;
+                max-height: 500px;
+                border-left-style: groove;
+                border-bottom-style: groove;
+                overflow: auto;
+            }*/
+            #slider-vertical{
+                top: 300px;
+                left: 400px;
+                position: absolute;
+            }
         </style>
     </head>        
 
@@ -47,8 +62,8 @@
         <div class="list left"> 
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#changes" aria-controls="changes" role="tab" data-toggle="tab">ChangedSourceCode</a></li>
-                <li role="presentation"><a href="#docs" aria-controls="docs" role="tab" data-toggle="tab">ChangedDocuments</a></li>
+                <li role="presentation" class="active"><a href="#changes" aria-controls="changes" role="tab" data-toggle="tab">SourceCode</a></li>
+                <li role="presentation"><a href="#docs" aria-controls="docs" role="tab" data-toggle="tab">Documents</a></li>
             </ul>
             
             <!-- Tab panes -->
@@ -57,9 +72,14 @@
                         
                 </div>
                 <div role="tabpanel" class="tab-pane fade" id="docs">
-                  
+                    <div class="panel-group" id="doc_list" role="tablist" aria-multiselectable="true">
+
+                    </div>
                 </div>
             </div>
+        </div>
+        <div id="slider-vertical">
+
         </div>
         <div id="details" class="list right">
         <span>Details</span>
@@ -74,6 +94,8 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
         <script src="js/jstree/dist/jstree.min.js"></script>
+
+        <script src="js/jquery-ui-1.11.4/jquery-ui.js"></script>
 
         <script src="js/three/build/three.js"></script>
         <script src="js/three/build/js/controls/OrbitControls.js"></script>
@@ -131,7 +153,8 @@
             var fileData, linkData, docData;
 
             fileData = loadFiles();
-            console.log(JSON.stringify(fileData, null, 4));
+            docData = loadDocs();
+            //console.log(JSON.stringify(fileData, null, 4));
             init();
             animate();
 
@@ -164,6 +187,7 @@
                 light.shadowMapHeight = 2048;
                 scene.add( light );
 
+                //createVerticalSlider();
                 //var size = 500, step = 50; //calculated based on size of dataset
                 // create a base
                 createBase(fileData);

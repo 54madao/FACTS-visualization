@@ -146,6 +146,13 @@ function createCity(data){
     // };
 }
 
+function createVerticalSlider(){
+    $( "#slider-vertical" ).slider({
+      orientation: "vertical",
+    });
+}
+
+
 function paintPoint(position){
     var particleMaterialBlue = new THREE.SpriteMaterial( {
         color: 0x0000FF,

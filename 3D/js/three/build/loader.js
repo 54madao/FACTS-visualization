@@ -1,8 +1,10 @@
 function loadFiles(url){
-	var res;	
+	var res;
+	url = 'http://jsonstub.com/FACTS/codeChangeSample-2.1.0-2.1.10';
+	//url = 'http://jsonstub.com/FACTS/codeChangeSample1-2.1.10-2.1.11';	
 	$.ajax({
 	    type: 'GET',
-	    url: 'http://jsonstub.com/FACTS/codeChangeSample1-2.1.10-2.1.11',
+	    url: url,
 	    contentType: 'application/json',
 	    beforeSend: function (request) {
 	        request.setRequestHeader('JsonStub-User-Key', 'db3469d5-0f9f-4a58-bac5-c343433fa8a4');
@@ -77,5 +79,48 @@ function loadLinks(url){
 }
 
 function loadDocs(url){
+	var res;
+	$.ajax({
+	    type: 'GET',
+	    url: 'http://jsonstub.com/FACTS/docChangeSample',
+	    contentType: 'application/json',
+	    beforeSend: function (request) {
+	        request.setRequestHeader('JsonStub-User-Key', 'db3469d5-0f9f-4a58-bac5-c343433fa8a4');
+	        request.setRequestHeader('JsonStub-Project-Key', '29fa3925-9a60-40bb-bd4c-fd509dd582d0');
+	    },
+	    async: false
+	}).done(function (data) {
+    	console.log(JSON.stringify(data, null, 4));
+    	var container = $('#doc_list');
+    	for (var i = 0; i < data.length; i++) {
+    		container.append(
+    			$('<div>').addClass("panel panel-default").append(
+    				$('<div>').attr({class: "panel-heading", role: "tab", id: "heading"+i}).append(
+    					$('<h4>').addClass("panel-title").append(
+    						$('<a>').attr({
+    							role: "button",
+    							'data-toggle': "collapse",
+    							//'data-parent': "#doc_list",
+    							href: "#collapse"+i,
+    							'aria-expanded': "false",
+    							'aria-controls': "collapse"+i
+    						}).text(data[i].key)
+    					)
+    				),
+    				$('<div>').attr({
+    					id: "collapse"+i,
+    					class: "panel-collapse collapse",
+    					role: "tabpanel",
+    					'aria-labelledby': "heading"+i
+    				}).append(
+    					$('<div>').addClass("panel-body").text(data[i].summary)
+    				)
+    			)
+    		);
+    	};
+    	
 
+    	res = data;
+	});
+	return res;
 }
