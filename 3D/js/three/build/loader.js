@@ -12,8 +12,8 @@ function loadFiles(url){
 	    },
 	    async: false
 	}).done(function (data) {
-		$('#version1').text(data.srcPath1);
-		$('#version2').text(data.srcPath2);
+		$('#version1').text(data.version1);
+		$('#version2').text(data.version2);
 	    //console.log(JSON.stringify(data, null, 4));
 	    //alert(data);
 	    //console.log(data.codeChangedPackagesList[0].packageName.replace(/\\/g, ".").substr(1, data.codeChangedPackagesList[0].packageName.length - 2));
@@ -36,9 +36,19 @@ function loadFiles(url){
 	    // 		)
 	    // 	);
 	    // }
-
     	//alert(JSON.stringify(data, null, 4));
-    	$('#changes').jstree({
+    	scale_max = data.maxChangedNumber;
+    	scale_min = data.minChangedNumber;
+    	$('#left_tab').css({
+    		'max-width': (function(){return window.innerWidth / 5})
+    	});
+    	$('#right_tab').css({
+    		'max-width': (function(){return window.innerWidth / 6})
+    	});
+    	$('#changes').css({
+    			'max-height': (function(){return window.innerHeight - 100}),
+    			'width': (function(){return window.innerWidth / 5})
+    	}).jstree({
     		'core': {
     			'data': (function () {
     				var results = [];
@@ -46,7 +56,7 @@ function loadFiles(url){
     					var tmp = data.codeChangedPackagesList[i].packageName;
  				    	var packageName = tmp.replace(/\\/g, ".").substr(1, tmp.length - 2);
  				    	results.push({
- 				    		id: i, 
+ 				    		id: i + '', 
  				    		text: packageName,
  				    		children: (function(i){
  				    			var results = [];
@@ -90,8 +100,17 @@ function loadDocs(url){
 	    },
 	    async: false
 	}).done(function (data) {
-    	console.log(JSON.stringify(data, null, 4));
+    	//console.log(JSON.stringify(data, null, 4));
+    	//console.log(data.length);
     	var container = $('#doc_list');
+    	$("#docs").css({
+    		'max-height': (function(){return window.innerHeight - 100}),
+    		'width': (function(){return window.innerWidth / 5})
+    	});
+    	$('#collapse_list').css({
+    		'max-height': (function(){return window.innerHeight - 100}),
+    		'width': (function(){return window.innerWidth / 6})
+    	});
     	for (var i = 0; i < data.length; i++) {
     		container.append(
     			$('<div>').addClass("panel panel-default").append(

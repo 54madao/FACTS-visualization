@@ -27,7 +27,6 @@ function createCity(data){
     var numRows = Math.ceil(Math.sqrt(data.codeChangedPackagesList.length));
     size = (numRows * 100 + numRows * 50) / 2;
     //console.log("size: " + size);
-    
     for ( var i = 0, nextX = -size, nextZ = -size; i < data.codeChangedPackagesList.length; i ++ ) {
         var group = new THREE.Group();
 
@@ -96,12 +95,15 @@ function createCity(data){
         var x = block_cube.position.x - block_length / 2;
         var z = block_cube.position.z - block_width / 2;
         // Building
-        for (var j = 0; j < num; j++) {  
+        for (var j = 0; j < num; j++) {
+
             //console.log(j + ": " + x + ", " + z + ", " + block_length);
             //var build_length = Math.floor( block_length / 5 );
             //var build_width = Math.floor( block_width / 5 );
             //var build_height = Math.floor( Math.random() * 100 + 3);
             var build_height = data.codeChangedPackagesList[i].codeChangedFileList[j].changedNumberLinesCode;
+            //scale_max = Math.max(scale_max, build_height);
+            //scale_min = Math.min(scale_min, build_height);
             var build = new THREE.BoxGeometry( 10, build_height, 10);
             var build_material = new THREE.MeshLambertMaterial( { color: 0xff0000, overdraw: 0.5 } );
             var build_cube = new THREE.Mesh( build, build_material  );
@@ -110,6 +112,7 @@ function createCity(data){
             build_cube.position.y = build_height / 2 + block_height;
             build_cube.position.z = 10 / 2 + z;
             scene.add( build_cube );
+            building_objects[i + "_" + j] = build_cube;
 
             if(x + 10 + 20 > block_cube.position.x + block_length / 2){
                 x = block_cube.position.x - block_length / 2;
@@ -120,8 +123,10 @@ function createCity(data){
             }
 
         };
-    }
 
+    }
+    //console.log(scale_max);
+    //console.log(scale_min);
     //group.position.y = 100;
 
     //scene.add( group );

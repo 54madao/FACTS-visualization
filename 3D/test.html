@@ -11,17 +11,28 @@
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.css"/>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.theme.css"/>
         <style type="text/css">
-            .list { color: ffff; 
-                    font-weight: bold; 
-                    font-size: 12px; 
-                    z-index: 100;
-                    width: 350px; 
-                    position: absolute; 
-                    top: 0px; 
-                    padding: 16px;
+            .list_left { 
+                color: ffff; 
+                font-weight: bold; 
+                font-size: 12px; 
+                z-index: 100;
+                width: 320px;
+                position: absolute; 
+                top: 0px; 
+                padding: 16px;
+                left: 0px;
             }
-            .left { left: 0px; }
-            .right { right: 0px;}
+            .list_right { 
+                color: ffff; 
+                font-weight: bold; 
+                font-size: 12px; 
+                z-index: 100;
+                width: 250px;
+                position: absolute; 
+                top: 0px; 
+                padding: 16px;
+                right: 0px;
+            }
             #info {
                 color: ffff;
                 position: absolute;
@@ -30,38 +41,71 @@
                 text-align: center;
             }
             #changes{
-                height: 500px;
-                max-height: 500px;
                 border-right-style: groove;
                 border-bottom-style: groove;
                 overflow: auto;
             }
             #docs{
-                height: 500px;
-                max-height: 500px;
                 border-right-style: groove;
                 border-bottom-style: groove;
                 overflow: auto;
             }
-/*            #details{
-                height: 500px;
-                max-height: 500px;
+            #collapse_list{
                 border-left-style: groove;
                 border-bottom-style: groove;
                 overflow: auto;
-            }*/
+            }
             #slider-vertical{
                 top: 300px;
                 left: 400px;
                 position: absolute;
             }
+
+            .dropdown-submenu>.dropdown-menu {
+                top:0;
+                left:100%;
+                margin-top:-6px;
+                margin-left:-1px;
+                -webkit-border-radius:0 6px 6px 6px;
+                -moz-border-radius:0 6px 6px 6px;
+                border-radius:0 6px 6px 6px;
+            }
+            .dropdown-submenu:hover>.dropdown-menu {
+                display:block;
+            }
+            .dropdown-submenu>a:after {
+                display:block;
+                content:" ";
+                float:right;
+                width:0;
+                height:0;
+                border-color:transparent;
+                border-style:solid;
+                border-width:5px 0 5px 5px;
+                border-left-color:#cccccc;
+                margin-top:5px;
+                margin-right:-10px;
+            }
+            .dropdown-submenu:hover>a:after {
+                border-left-color:#ffffff;
+            }
+            .dropdown-submenu.pull-left {
+                float:none;
+            }
+            .dropdown-submenu.pull-left>.dropdown-menu {
+                left:-100%;
+                margin-left:10px;
+                -webkit-border-radius:6px 0 6px 6px;
+                -moz-border-radius:6px 0 6px 6px;
+                border-radius:6px 0 6px 6px;
+            }
         </style>
     </head>        
 
     <body>
-        <div class="list left"> 
+        <div class="list_left" > 
             <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs nav-justified" role="tablist" id="left_tab">
                 <li role="presentation" class="active"><a href="#changes" aria-controls="changes" role="tab" data-toggle="tab">SourceCode</a></li>
                 <li role="presentation"><a href="#docs" aria-controls="docs" role="tab" data-toggle="tab">Documents</a></li>
             </ul>
@@ -81,8 +125,24 @@
         <div id="slider-vertical">
 
         </div>
-        <div id="details" class="list right">
-        <span>Details</span>
+        <div class="list_right">
+            
+            <div class="panel panel-default" id="right_tab">
+                
+                    <ul class="nav nav-tabs nav-justified" role="tablist" >
+                        <li role="presentation" class="active">
+                            <a role="tab" data-toggle="collapse" href="#collapse_list" aria-expanded="false" aria-controls="collapse_list">
+                                Related Documents
+                            </a>
+                        </li>
+                    </ul>
+                
+                <div id="collapse_list" class="panel-collapse collapse" role="tabpanel" aria-labelledby="relatedDocs_heading">
+                    <div class="panel-group" id="relatedDocs_list" role="tablist" aria-multiselectable="true">
+
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="3d">
 
@@ -123,20 +183,23 @@
             // main()
             var container, stats;
             var camera, controls, scene, renderer;
-            var objects = [], plane, group;
+            var building_objects = [], plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
             offset = new THREE.Vector3(),
             INTERSECTED, SELECTED;
 
+            var onclick_color = 0x00ff00;
+            var onhover_color = 0xff00ff;
             //pointer line
             var rightline;
             var leftline;
             var direct_line_material = new THREE.LineBasicMaterial({
                 color: 0x000000
             });
-
+            var scale_max = Number.MIN_VALUE;
+            var scale_min = Number.MAX_VALUE;
             //text
             var text = "C",
                 font_height = 2,
@@ -225,7 +288,7 @@
 
                 // add listener
                 window.addEventListener( 'resize', onWindowResize, false );
-                //document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
 
                 
