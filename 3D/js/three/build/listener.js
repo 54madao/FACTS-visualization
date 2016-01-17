@@ -140,6 +140,7 @@ function onDocumentMouseDown( event ) {
 
     if (intersects.length > 0) {
         if (SELECTED != intersects[0].object) {
+            console.log("not the same");
             if (SELECTED){
                 material = SELECTED.material;
                 if(material.emissive){
@@ -178,18 +179,18 @@ function onDocumentMouseDown( event ) {
         }
 
     } else {
+        //console.log("no object");
+        // if (SELECTED){
+        //     material = SELECTED.material;
 
-        if (SELECTED){
-            material = SELECTED.material;
+        //     if(material.emissive){
+        //         material.emissive.setHex(SELECTED.currentHex);
+        //         // scene.remove(rightline);
+        //         // scene.remove(leftline);
+        //     }
+        // }
 
-            if(material.emissive){
-                material.emissive.setHex(SELECTED.currentHex);
-                // scene.remove(rightline);
-                // scene.remove(leftline);
-            }
-        }
-
-        SELECTED = null;
+        // SELECTED = null;
 
     }
 
