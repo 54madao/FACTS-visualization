@@ -43,8 +43,9 @@ function loadFiles(url){
     		'max-width': (function(){return window.innerWidth / 5})
     	});
     	$('#right_tab').css({
-    		'max-width': (function(){return window.innerWidth / 6})
-    	});
+	        'width': (function(){return window.innerWidth / 6}),
+	        'max-width': (function(){return window.innerWidth / 6})
+	    });
     	$('#changes').css({
     			'max-height': (function(){return window.innerHeight - 100}),
     			'width': (function(){return window.innerWidth / 5})

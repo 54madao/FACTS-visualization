@@ -16,12 +16,14 @@ function onWindowResize() {
     });
     $('#collapse_list').css({
         'max-height': (function(){return window.innerHeight - 100}),
-        'width': (function(){return window.innerWidth / 6})
+        'width': (function(){return window.innerWidth / 6}),
+        'max-width': (function(){return window.innerWidth / 6})
     });
     $('#left_tab').css({
         'max-width': (function(){return window.innerWidth / 5})
     });
     $('#right_tab').css({
+        'width': (function(){return window.innerWidth / 6}),
         'max-width': (function(){return window.innerWidth / 6})
     });
 }
@@ -155,6 +157,7 @@ function onDocumentMouseDown( event ) {
                 //if(SELECTED != INTERSECTED)
                 //SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 material.emissive.setHex(onclick_color);
+                $("a[href='#collapse_list']").text(SELECTED.name);
                 showRelatedDocs(true);
 
                 // // to right
@@ -240,6 +243,7 @@ function showRelatedDocs(on){
 
 $('#changes').on('select_node.jstree', function(e, data){
     if(building_objects[data.selected] != null){
+        $("a[href='#collapse_list']").text(building_objects[data.selected].name);
         if(SELECTED){
             SELECTED.material.emissive.setHex(SELECTED.currentHex);    
         }
@@ -250,6 +254,7 @@ $('#changes').on('select_node.jstree', function(e, data){
     }
     else{
         showRelatedDocs(false);
+        $("a[href='#collapse_list']").text("Related Documents");
         if(SELECTED){
             SELECTED.material.emissive.setHex(SELECTED.currentHex);
         }
