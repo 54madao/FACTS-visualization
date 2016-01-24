@@ -416,7 +416,7 @@ function makeTextSprite( message, parameters )
     // get size data (height depends only on font size)
     var metrics = context.measureText( message );
     var textWidth = metrics.width;
-    console.log("width: " + textWidth);
+    //console.log("width: " + textWidth);
     
     // background color
     context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
@@ -442,8 +442,8 @@ function makeTextSprite( message, parameters )
         { map: texture} );
     var sprite = new THREE.Sprite( spriteMaterial );
     sprite.scale.set(100,50,1.0);
-    console.log("canvas width: " + canvas.width);
-    console.log("canvas height: " + canvas.height);
+    //console.log("canvas width: " + canvas.width);
+    //console.log("canvas height: " + canvas.height);
     return sprite;  
 }
 

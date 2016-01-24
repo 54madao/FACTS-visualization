@@ -378,9 +378,9 @@ function moveUsingMatrix(object){
     var x = (camera.position.x - object.position.x) / 3;
     var y = (camera.position.y - object.position.y) / 3;
     var z = (camera.position.z - object.position.z) / 3;
-    x = Math.abs(x) < 250 ? x / Math.abs(x) * 250 : x;
-    y = Math.abs(y) < 250 ? y / Math.abs(y) * 250 : y;
-    z = Math.abs(z) < 250 ? z / Math.abs(z) * 250 : z;
+    x = Math.abs(x) < 200 ? x / Math.abs(x) * 200 : x;
+    y = Math.abs(y) < 200 ? y / Math.abs(y) * 200 : y;
+    z = Math.abs(z) < 200 ? z / Math.abs(z) * 200 : z;
     x += object.position.x;
     y += object.position.y;
     z += object.position.z;
