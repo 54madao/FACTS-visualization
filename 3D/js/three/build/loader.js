@@ -140,7 +140,13 @@ function loadDocs(url){
     					role: "tabpanel",
     					'aria-labelledby': "heading"+i
     				}).append(
-    					$('<div>').addClass("panel-body").text(data[i].summary)
+    					$('<div>').addClass("panel-body").append('<p>').html(
+                            data[i].summary + "<br/><br/>" +
+                            "#" + data[i].number + "<br/><br/>" +
+                            "Committed By " + data[i].committer + "<br/>" +
+                            "Committed on " + data[i].date + "<br/><br/>"+
+                            "Created By " + data[i].author
+                            )
     				)
     			)
     		);

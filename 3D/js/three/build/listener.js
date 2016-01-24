@@ -205,7 +205,7 @@ function showRelatedDocs(on){
     if(on){
         var num = Math.floor(Math.random() * 5) + 1;   
         for (var i = 0; i < num; i++) {
-            var index = Math.floor(Math.random() * 100);
+            var index = Math.floor(Math.random() * 6);
             container.append(
                 $('<div>').addClass("panel panel-default").append(
                     $('<div>').attr({class: "panel-heading", role: "tab", id: "relatedheading"+index}).append(
@@ -232,7 +232,13 @@ function showRelatedDocs(on){
                         role: "tabpanel",
                         'aria-labelledby': "relatedheading"+index
                     }).append(
-                        $('<div>').addClass("panel-body").text(docData[index].summary)
+                        $('<div>').addClass("panel-body").append('<p>').html(
+                            docData[i].summary + "<br/><br/>" +
+                            "#" + docData[i].number + "<br/><br/>" +
+                            "Committed By " + docData[i].committer + "<br/>" +
+                            "Committed on " + docData[i].date + "<br/><br/>"+
+                            "Created By " + docData[i].author
+                            )
                     )
                 )
             );
