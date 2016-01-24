@@ -260,7 +260,7 @@ $('#changes').on('select_node.jstree', function(e, data){
     }
     else{
         showRelatedDocs(false);
-        $("a[href='#collapse_list']").text("Related Tickets");
+        $("a[href='#collapse_list']").text("Related Defects");
         if(SELECTED){
             SELECTED.material.emissive.setHex(SELECTED.currentHex);
         }
