@@ -75,7 +75,14 @@ function loadFiles(url){
     				return results;
     			})()
     		}
-    	}); 
+    	}).bind("dblclick.jstree", function (e, data) {
+            var node = $(event.target).closest("li");
+            //var data = node.data("id");
+            // Do some action
+            console.log(node.attr('id'));
+            console.log(building_objects[node.attr('id')]);
+            moveUsingMatrix(building_objects[node.attr('id')]);
+        });; 
 
 
 	    res = data;

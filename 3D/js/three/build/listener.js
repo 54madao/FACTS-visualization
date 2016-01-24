@@ -100,7 +100,7 @@ function onDocumentMouseMove( event ) {
     }
 }
 
-function onDocumentMouseDown( event ) {
+function onDocumentClick( event ) {
 
     // event.preventDefault();
     // console.log("position: " + event.clientX + ", "+ event.clientY);
@@ -254,7 +254,7 @@ $('#changes').on('select_node.jstree', function(e, data){
     }
     else{
         showRelatedDocs(false);
-        $("a[href='#collapse_list']").text("Related Documents");
+        $("a[href='#collapse_list']").text("Related Tickets");
         if(SELECTED){
             SELECTED.material.emissive.setHex(SELECTED.currentHex);
         }
@@ -277,3 +277,118 @@ $(document).on('click', "a[role='button']",function(event){
 //             return $(this).height();
 //     });
 // })
+
+
+function onDocumentDblClick(event){
+    event.preventDefault();
+
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+
+    // find intersections
+
+    raycaster.setFromCamera( mouse, camera );
+    //alert("Double!");
+    var intersects = raycaster.intersectObjects( scene.children ), material;
+    if (intersects.length > 0){
+       moveUsingMatrix(intersects[0].object);
+        
+        //controls.update();
+
+        // solution 2 using quaternion
+        // //reset everything
+        // var endQ = new THREE.Quaternion().copy(intersects[0].object.quaternion).normalize();
+        // console.log(endQ);
+        // var iniQ = new THREE.Quaternion().copy(camera.quaternion).normalize();
+        // console.log(iniQ);
+        // var curQ = new THREE.Quaternion();
+        // var vec3 = new THREE.Vector3();
+        // //var euler = new THREE.Euler();
+        // //euler.setFromVector3(intersects[0].object.quaternion);
+        // //endQ.setFromEuler(euler);
+        // THREE.Quaternion.slerp(iniQ, endQ, curQ, 1);
+        // console.log(curQ);
+
+        // // apply new quaternion to camera position
+        // vec3.x = cameraPos0.x;
+        // vec3.y = cameraPos0.y;
+        // vec3.z = cameraPos0.z;
+        // console.log(vec3);
+        // vec3.applyQuaternion(curQ.normalize());
+        // console.log(vec3);
+        // camera.position.copy(vec3);
+        // console.log(camera.position);
+        // //camera.lookAt( intersects[0].object.position );
+        // // // apply new quaternion to camera up
+        // // vec3 = cameraUp0.clone();
+        // // vec3.applyQuaternion(curQ);
+        // // camera.up.copy(vec3);
+    }
+
+    // if (intersects.length > 0) {
+    //     if (SELECTED != intersects[0].object) {
+    //         console.log("not the same");
+    //         if (SELECTED){
+    //             material = SELECTED.material;
+    //             if(material.emissive){
+    //                 material.emissive.setHex(SELECTED.currentHex);
+    //             }
+    //         }   
+    //         SELECTED = intersects[0].object;
+    //         material = SELECTED.material;
+    //         if(material.emissive){
+    //             //if(SELECTED != INTERSECTED)
+    //             //SELECTED.currentHex = SELECTED.material.emissive.getHex();
+    //             material.emissive.setHex(onclick_color);
+    //             $("a[href='#collapse_list']").text(SELECTED.name);
+    //             showRelatedDocs(true);
+    //         }
+    //         console.log("length: " + intersects.length);
+    //         console.log(SELECTED.position);
+    //     }
+
+    // } else {
+    //     //console.log("no object");
+    //     // if (SELECTED){
+    //     //     material = SELECTED.material;
+
+    //     //     if(material.emissive){
+    //     //         material.emissive.setHex(SELECTED.currentHex);
+    //     //         // scene.remove(rightline);
+    //     //         // scene.remove(leftline);
+    //     //     }
+    //     // }
+
+    //     // SELECTED = null;
+
+    // }
+}
+
+function moveUsingMatrix(object){
+    // solution 1 using matrix
+    console.log("object: " + object.position.x + ", " + object.position.y + ", " + object.position.z);
+    console.log("camera: " + camera.position.x + ", " + camera.position.y + ", " + camera.position.z);
+    var x = (camera.position.x - object.position.x) / 3;
+    var y = (camera.position.y - object.position.y) / 3;
+    var z = (camera.position.z - object.position.z) / 3;
+    x = Math.abs(x) < 250 ? x / Math.abs(x) * 250 : x;
+    y = Math.abs(y) < 250 ? y / Math.abs(y) * 250 : y;
+    z = Math.abs(z) < 250 ? z / Math.abs(z) * 250 : z;
+    x += object.position.x;
+    y += object.position.y;
+    z += object.position.z;
+    console.log("target: " + x + ", " + y + ", " + z);  
+    var start = new THREE.Vector3();
+    start = camera.position.clone();
+    var target = new THREE.Vector3(x, y, z);
+    tween = new TWEEN.Tween(start).to(target, 1000).onUpdate(function(){
+        camera.position.set(start.x, start.y, start.z);
+        console.log("camera: " + camera.position.x + ", " + camera.position.y + ", " + camera.position.z);  
+        camera.lookAt( object.position );
+    }).start();
+    
+   // console.log("camera: " + camera.position.x + ", " + camera.position.y + ", " + camera.position.z);      
+    //console.log("camera: " + camera.position.x + ", " + camera.position.y + ", " + camera.position.z);
+    controls.target.set(object.position.x, object.position.y, object.position.z);
+}

@@ -106,8 +106,8 @@
         <div class="list_left" > 
             <!-- Nav tabs -->
             <ul class="nav nav-tabs nav-justified" role="tablist" id="left_tab">
-                <li role="presentation" class="active"><a href="#changes" aria-controls="changes" role="tab" data-toggle="tab">SourceCode</a></li>
-                <li role="presentation"><a href="#docs" aria-controls="docs" role="tab" data-toggle="tab">Documents</a></li>
+                <li role="presentation" class="active"><a href="#changes" aria-controls="changes" role="tab" data-toggle="tab">Changed Files</a></li>
+                <li role="presentation"><a href="#docs" aria-controls="docs" role="tab" data-toggle="tab">Tickets</a></li>
             </ul>
             
             <!-- Tab panes -->
@@ -132,7 +132,7 @@
                     <ul class="nav nav-tabs nav-justified" role="tablist" >
                         <li role="presentation" class="active">
                             <a role="tab" data-toggle="collapse" href="#collapse_list" aria-expanded="false" aria-controls="collapse_list">
-                                Related Documents
+                                Related Tickets
                             </a>
                         </li>
                     </ul>
@@ -163,6 +163,7 @@
         <script src="js/three/build/js/libs/stats.min.js"></script>
         <script src="js/three/build/js/geometries/TextGeometry.js"></script>
         <script src="js/three/build/js/utils/FontUtils.js"></script>
+        <script src="js/three/build/js/libs/tween.min.js"></script>
 
         <script src="js/three/build/js/fonts/gentilis_bold.typeface.js"></script>
         <script src="js/three/build/js/fonts/gentilis_regular.typeface.js"></script>
@@ -182,7 +183,7 @@
 
         <script>
             // main()
-            var container, stats;
+            var container, stats, tween;
             var camera, controls, scene, renderer;
             var building_objects = [], plane, group;
             var cameraPoint;
@@ -190,6 +191,9 @@
             var mouse = new THREE.Vector2(),
             offset = new THREE.Vector3(),
             INTERSECTED, SELECTED;
+
+            var cameraPos0;
+            var cameraUp0;
 
             var onclick_color = 0x00ff00;
             var onhover_color = 0xff00ff;
@@ -228,7 +232,8 @@
                 camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
                 camera.position.y = 1500;
                 //camera.lookAt( new THREE.Vector3() );
-
+                cameraPos0 = camera.position.clone();
+                cameraUp0 = camera.up.clone();
                 // create scene and add globle light
                 scene = new THREE.Scene();
                 scene.add( new THREE.AmbientLight( 0x505050 ) );
@@ -287,7 +292,8 @@
 
                 // add listener
                 window.addEventListener( 'resize', onWindowResize, false );
-                document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                document.addEventListener( 'click', onDocumentClick, false );
+                document.addEventListener( 'dblclick', onDocumentDblClick, false );
 
 
                 
@@ -318,7 +324,7 @@
             }
 
             function render() {
-
+                TWEEN.update();
                 controls.update();
                 renderer.render( scene, camera );
 

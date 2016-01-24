@@ -228,6 +228,7 @@ function calculatePositions(data){
                 x: building_postition_x, 
                 z: building_postition_z,
                 height: build_height,
+                originalHeight: data.codeChangedPackagesList[i].codeChangedFileList[j].changedNumberLinesCode,
                 id: i + "_" + j,
                 name: data.codeChangedPackagesList[i].codeChangedFileList[j].codePathName.match(/[^\\/]+\.[^\\/]+$/)[0]
             });
@@ -339,7 +340,7 @@ function createBuildings(positions,offset){
         build_cube.position.x = positions[i].x - offset;
         build_cube.position.y = positions[i].height / 2;
         build_cube.position.z = positions[i].z - offset;
-        build_cube.name = positions[i].name;
+        build_cube.name = positions[i].name + " (" + positions[i].originalHeight +" LOC)";
         scene.add( build_cube );
         building_objects[positions[i].id] = build_cube;
     }
