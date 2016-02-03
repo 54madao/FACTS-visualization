@@ -6,6 +6,7 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
 
     renderer.setSize( window.innerWidth, window.innerHeight );
+    css3drenderer.setSize( window.innerWidth, window.innerHeight );
     $('#changes').css({
         'max-height': (function(){return window.innerHeight - 100}),
         'width': (function(){return window.innerWidth / 5})
@@ -132,7 +133,7 @@ function onDocumentClick( event ) {
 
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
+    showRelation();
 
     // find intersections
 
@@ -397,4 +398,31 @@ function moveUsingMatrix(object){
    // console.log("camera: " + camera.position.x + ", " + camera.position.y + ", " + camera.position.z);      
     //console.log("camera: " + camera.position.x + ", " + camera.position.y + ", " + camera.position.z);
     controls.target.set(object.position.x, object.position.y, object.position.z);
+}
+
+function showRelation(){
+    var element = document.createElement( 'div' );
+    element.className = 'element';
+    element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
+
+    var number = document.createElement( 'div' );
+    number.className = 'number';
+    number.textContent = 1;
+    element.appendChild( number );
+
+    var symbol = document.createElement( 'div' );
+    symbol.className = 'symbol';
+    symbol.textContent = "TEST";
+    element.appendChild( symbol );
+
+    var details = document.createElement( 'div' );
+    details.className = 'details';
+    details.innerHTML = "TEST" + '<br>' + "TEST";
+    element.appendChild( details );
+
+    var object = new THREE.CSS3DSprite( element );
+    object.position.x = Math.random() * 500;
+    object.position.y = Math.random() * 500;
+    object.position.z = Math.random() * 500;
+    css3dscene.add( object );
 }
