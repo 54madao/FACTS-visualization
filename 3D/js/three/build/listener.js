@@ -48,16 +48,21 @@ function onDocumentMouseMove( event ) {
             if (INTERSECTED){
                 material = INTERSECTED.material;
                 if(material.emissive){
-                    material.emissive.setHex(INTERSECTED.currentHex);
-                    //scene.remove(rightline);
-                    //scene.remove(leftline);
+                    if(INTERSECTED != SELECTED){
+                        material.emissive.setHex(INTERSECTED.currentHex);
+                    }
+                    else
+                        material.emissive.setHex(onclick_color);
+                    // scene.remove(rightline);
+                    // scene.remove(leftline);
                 }
             }   
             INTERSECTED = intersects[0].object;
             material = INTERSECTED.material;
             if(material.emissive){
-                if(INTERSECTED != SELECTED)
+                if(INTERSECTED != SELECTED){
                     INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                }
                 material.emissive.setHex(onhover_color);
 
                 // // to right
@@ -87,8 +92,9 @@ function onDocumentMouseMove( event ) {
             material = INTERSECTED.material;
 
             if(material.emissive){
-                if(INTERSECTED != SELECTED)
+                if(INTERSECTED != SELECTED){
                     material.emissive.setHex(INTERSECTED.currentHex);
+                }
                 else
                     material.emissive.setHex(onclick_color);
                 // scene.remove(rightline);
@@ -129,11 +135,13 @@ function onDocumentClick( event ) {
     // particle.position.copy(rayVector) ;
     // particle.scale.x = particle.scale.y = 16;
     // scene.add( particle );
+
+    // add stoppropagate to jstree.js
     event.preventDefault();
 
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    showRelation();
+    //showRelation();
 
     // find intersections
 
@@ -183,7 +191,7 @@ function onDocumentClick( event ) {
         }
 
     } else {
-        //console.log("no object");
+        // console.log("no object");
         // if (SELECTED){
         //     material = SELECTED.material;
 
@@ -193,7 +201,8 @@ function onDocumentClick( event ) {
         //         // scene.remove(leftline);
         //     }
         // }
-
+        // showRelatedDocs(false);
+        // $("a[href='#collapse_list']").text("Related Defects");
         // SELECTED = null;
 
     }
@@ -249,6 +258,10 @@ function showRelatedDocs(on){
 }
 
 $('#changes').on('select_node.jstree', function(e, data){
+
+    //event.preventDefault();
+    event.stopImmediatePropagation();
+    //event.stopPropagation();
     if(building_objects[data.selected] != null){
         $("a[href='#collapse_list']").text(building_objects[data.selected].name);
         if(SELECTED){
@@ -260,12 +273,12 @@ $('#changes').on('select_node.jstree', function(e, data){
         showRelatedDocs(true);
     }
     else{
-        showRelatedDocs(false);
-        $("a[href='#collapse_list']").text("Related Defects");
-        if(SELECTED){
-            SELECTED.material.emissive.setHex(SELECTED.currentHex);
-        }
-        SELECTED = null;
+        // showRelatedDocs(false);
+        // $("a[href='#collapse_list']").text("Related Defects");
+        // if(SELECTED){
+        //     SELECTED.material.emissive.setHex(SELECTED.currentHex);
+        // }
+        // SELECTED = null;
     }
 });
 
@@ -298,6 +311,7 @@ function onDocumentDblClick(event){
     raycaster.setFromCamera( mouse, camera );
     //alert("Double!");
     var intersects = raycaster.intersectObjects( scene.children ), material;
+    //console.log(intersects.length);
     if (intersects.length > 0){
        moveUsingMatrix(intersects[0].object);
         
@@ -332,7 +346,21 @@ function onDocumentDblClick(event){
         // // vec3.applyQuaternion(curQ);
         // // camera.up.copy(vec3);
     }
+    else{
+        console.log("no object");
+        if (SELECTED){
+            material = SELECTED.material;
 
+            if(material.emissive){
+                material.emissive.setHex(SELECTED.currentHex);
+                // scene.remove(rightline);
+                // scene.remove(leftline);
+            }
+        }
+        showRelatedDocs(false);
+        $("a[href='#collapse_list']").text("Related Defects");
+        SELECTED = null;
+    }
     // if (intersects.length > 0) {
     //     if (SELECTED != intersects[0].object) {
     //         console.log("not the same");
@@ -426,3 +454,63 @@ function showRelation(){
     object.position.z = Math.random() * 500;
     css3dscene.add( object );
 }
+
+function onKeyDown( event ) {
+    if(event.keyCode == 27){
+        console.log("ESC");
+        if (SELECTED){
+            material = SELECTED.material;
+
+            if(material.emissive){
+                material.emissive.setHex(SELECTED.currentHex);
+                // scene.remove(rightline);
+                // scene.remove(leftline);
+            }
+        }
+        showRelatedDocs(false);
+        $("a[href='#collapse_list']").text("Related Defects");
+        SELECTED = null;
+    }
+}
+
+// $('a[href="#changes"]').click(function(e){
+//     e.preventDefault();
+//     e.stopImmediatePropagation();
+//     $(this).tab('show');
+// })
+
+// $('a[href="#docs"]').click(function(e){
+//     e.preventDefault();
+//     e.stopImmediatePropagation();
+//     $(this).tab('show');
+// })
+
+$(document).on('click', 'a[data-toggle="tab"]',function(e){
+    //e.preventDefault();
+    e.stopImmediatePropagation();
+    //var target = $(this).href;
+    //console.log(target);
+    //$('#collapse_list').collapse('toggle');
+    //showRelatedDocs(true);
+})
+
+$(document).on('click', 'a[data-toggle="collapse"]',function(e){
+    //e.preventDefault();
+    e.stopImmediatePropagation();
+    //var target = $(this).href;
+    //console.log(target);
+    //$('#collapse_list').collapse('toggle');
+    //showRelatedDocs(true);
+})
+
+//e.stopImmediatePropagation();
+
+$(document).on('click.jstree', '.jstree-ocl',function(e){
+    //e.preventDefault();
+    e.stopImmediatePropagation();
+    //console.log("!!!!!!");
+    //var target = $(this).href;
+    //console.log(target);
+    //$('#collapse_list').collapse('toggle');
+    //showRelatedDocs(true);
+})
