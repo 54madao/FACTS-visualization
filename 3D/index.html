@@ -61,43 +61,46 @@
                 position: absolute;
             }
 
-            .dropdown-submenu>.dropdown-menu {
-                top:0;
-                left:100%;
-                margin-top:-6px;
-                margin-left:-1px;
-                -webkit-border-radius:0 6px 6px 6px;
-                -moz-border-radius:0 6px 6px 6px;
-                border-radius:0 6px 6px 6px;
+            .element {
+                width: 120px;
+                height: 160px;
+                box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+                border: 1px solid rgba(127,255,255,0.25);
+                text-align: center;
+                cursor: default;
             }
-            .dropdown-submenu:hover>.dropdown-menu {
-                display:block;
+
+            .element:hover {
+                box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+                border: 1px solid rgba(127,255,255,0.75);
             }
-            .dropdown-submenu>a:after {
-                display:block;
-                content:" ";
-                float:right;
-                width:0;
-                height:0;
-                border-color:transparent;
-                border-style:solid;
-                border-width:5px 0 5px 5px;
-                border-left-color:#cccccc;
-                margin-top:5px;
-                margin-right:-10px;
+
+            .element .number {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                font-size: 12px;
+                color: rgba(127,255,255,0.75);
             }
-            .dropdown-submenu:hover>a:after {
-                border-left-color:#ffffff;
+
+            .element .symbol {
+                position: absolute;
+                top: 40px;
+                left: 0px;
+                right: 0px;
+                font-size: 60px;
+                font-weight: bold;
+                color: rgba(255,255,255,0.75);
+                text-shadow: 0 0 10px rgba(0,255,255,0.95);
             }
-            .dropdown-submenu.pull-left {
-                float:none;
-            }
-            .dropdown-submenu.pull-left>.dropdown-menu {
-                left:-100%;
-                margin-left:10px;
-                -webkit-border-radius:6px 0 6px 6px;
-                -moz-border-radius:6px 0 6px 6px;
-                border-radius:6px 0 6px 6px;
+
+            .element .details {
+                position: absolute;
+                bottom: 15px;
+                left: 0px;
+                right: 0px;
+                font-size: 12px;
+                color: rgba(127,255,255,0.75);
             }
         </style>
     </head>        
@@ -164,6 +167,7 @@
         <script src="js/three/build/js/geometries/TextGeometry.js"></script>
         <script src="js/three/build/js/utils/FontUtils.js"></script>
         <script src="js/three/build/js/libs/tween.min.js"></script>
+        <script src="js/three/build/js/renderers/CSS3DRenderer.js"></script>
 
         <script src="js/three/build/js/fonts/gentilis_bold.typeface.js"></script>
         <script src="js/three/build/js/fonts/gentilis_regular.typeface.js"></script>
@@ -180,11 +184,12 @@
         <script type="text/javascript" src="js/three/build/listener.js"></script>
         <script type="text/javascript" src="js/three/build/loader.js"></script>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
 
         <script>
             // main()
             var container, stats, tween;
-            var camera, controls, scene, renderer;
+            var camera, controls, scene, renderer, css3dscene, css3drenderer;
             var building_objects = [], plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
@@ -219,7 +224,6 @@
             //console.log(JSON.stringify(fileData, null, 4));
             init();
             animate();
-
             //start()
             function init() {
 
@@ -230,13 +234,15 @@
 
                 // create camera
                 camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-                camera.position.y = 1500;
+                camera.position.z = 1000;
                 //camera.lookAt( new THREE.Vector3() );
                 cameraPos0 = camera.position.clone();
                 cameraUp0 = camera.up.clone();
                 // create scene and add globle light
                 scene = new THREE.Scene();
                 scene.add( new THREE.AmbientLight( 0x505050 ) );
+
+                css3dscene = new THREE.Scene();
 
                 // create specific light
                 var light = new THREE.SpotLight( 0xffffff, 1.5 );
@@ -272,25 +278,39 @@
                 //var CONTAINER_WIDTH = parseInt(CONTAINER_STYLE.getPropertyValue('width'));
                 // create renderer
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
-                renderer.setClearColor( 0xf0f0f0 );
+                renderer.setClearColor(0xffffff, 1);
                 renderer.setPixelRatio( window.devicePixelRatio );
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 //renderer.setSize( CONTAINER_WIDTH, window.innerHeight );
-                renderer.sortObjects = false;
-                renderer.shadowMap.enabled = true;
-                renderer.shadowMap.type = THREE.PCFShadowMap;
-                renderer.domElement.style.position = "absolute";
-                container.appendChild( renderer.domElement );
+                // renderer.sortObjects = false;
+                // renderer.shadowMap.enabled = true;
+                // renderer.shadowMap.type = THREE.PCFShadowMap;
+                //renderer.domElement.style.position = "absolute";
+                //container.appendChild( renderer.domElement );
                 //container.insertBefore(renderer.domElement, container.firstChild);
+                renderer.domElement.style.zIndex = 5;
+                document.body.appendChild(renderer.domElement);
+
+                //css3drenderer
+                css3drenderer = new THREE.CSS3DRenderer();
+                css3drenderer.setSize( window.innerWidth, window.innerHeight );
+                css3drenderer.domElement.style.position = 'absolute';
+                //css3drenderer.domElement.style.right = "100px";
+                //css3drenderer.domElement.style.right = "200 px";
+                //container.appendChild( css3drenderer.domElement );
+                css3drenderer.domElement.style.top = 0;
+                document.body.appendChild(css3drenderer.domElement);
 
                 // create view control
-                controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+                controls = new THREE.OrbitControls(this.camera);
                 controls.target.set (0,10,0);
 
 
-                document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+
 
                 // add listener
+                document.addEventListener( 'mousemove', onDocumentMouseMove, false );   
                 window.addEventListener( 'resize', onWindowResize, false );
                 document.addEventListener( 'click', onDocumentClick, false );
                 document.addEventListener( 'dblclick', onDocumentDblClick, false );
@@ -325,9 +345,11 @@
 
             function render() {
                 TWEEN.update();
-                controls.update();
+                css3drenderer.render( css3dscene, camera);
                 renderer.render( scene, camera );
-
+                controls.update();
+                
+            
 
                 // //to canvas space
                 // var worldPosition = $('#changes').position();
