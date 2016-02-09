@@ -64,7 +64,7 @@ function onDocumentMouseMove( event ) {
                     INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
                 }
                 material.emissive.setHex(onhover_color);
-
+                //material.opacity = 1;
                 // // to right
                 // var right_line_geometry = new THREE.Geometry();
                 // right_line_geometry .vertices.push(INTERSECTED.position);
@@ -449,9 +449,11 @@ function showRelation(){
     element.appendChild( details );
 
     var object = new THREE.CSS3DSprite( element );
-    object.position.x = Math.random() * 500;
-    object.position.y = Math.random() * 500;
-    object.position.z = Math.random() * 500;
+    //var object = new THREE.CSS3DObject( element );
+    object.position.x = 0;
+    object.position.y = 0;
+    object.position.z = 0;
+    //object.rotation.x = - Math.PI / 2;
     css3dscene.add( object );
 }
 
@@ -514,3 +516,8 @@ $(document).on('click.jstree', '.jstree-ocl',function(e){
     //$('#collapse_list').collapse('toggle');
     //showRelatedDocs(true);
 })
+
+
+function onMouseWheel( e ){
+
+}

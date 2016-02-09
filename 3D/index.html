@@ -315,7 +315,8 @@
                 document.addEventListener( 'click', onDocumentClick, false );
                 document.addEventListener( 'dblclick', onDocumentDblClick, false );
                 window.addEventListener( 'keydown', onKeyDown, false );
-
+                //window.addEventListener( 'mousewheel', onMouseWheel, false );
+                //window.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
                 
                 // var dir = canvasPosition.sub( camera.position ).normalize();
                 // var distance = - camera.position.z / dir.z;
@@ -347,8 +348,8 @@
                 TWEEN.update();
                 css3drenderer.render( css3dscene, camera);
                 renderer.render( scene, camera );
-                controls.update();
-                
+                //controls.update();
+                //console.log("x:" + camera.position.x + ", y:" + camera.position.y + ", z" + camera.position.z);
             
 
                 // //to canvas space

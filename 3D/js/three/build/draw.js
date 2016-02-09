@@ -272,15 +272,61 @@ function createBlocks(positions,offset){
         block_cube.position.y = block_height / 2;
         block_cube.position.z = positions[i].z - offset;
 
-        scene.add( group );
-        group.add( block_cube );
+        //scene.add( group );
+        //group.add( block_cube );
+
+        var element = document.createElement( 'div' );
+        //element.className = 'element';
+        //element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
+        element.style.backgroundColor = 'rgba(0,127,127,0.5)';
+        element.style.width = positions[i].width + 'px';
+        element.style.height = positions[i].length + 'px';
+        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+        element.style.border= '1px solid rgba(127,255,255,0.25)';
+
+        // var number = document.createElement( 'div' );
+        // number.className = 'number';
+        // number.textContent = 1;
+        // element.appendChild( number );
+
+        // var symbol = document.createElement( 'div' );
+        // symbol.className = 'symbol';
+        // symbol.textContent = "TEST";
+        // element.appendChild( symbol );
+
+        // var details = document.createElement( 'div' );
+        // details.className = 'details';
+        // details.innerHTML = "TEST" + '<br>' + "TEST";
+        // element.appendChild( details );
+
+        //var object = new THREE.CSS3DSprite( element );
+        var object = new THREE.CSS3DObject( element );
+        object.position.x = positions[i].x - offset;
+        object.position.y = 0;
+        object.position.z = positions[i].z - offset;
+        object.rotation.x = - Math.PI / 2;
+        css3dscene.add( object );
+
+
 
         //Text
         var tmp = fileData.codeChangedPackagesList[i].packageName;
         tmp = tmp.replace(/\\/g, ".").substr(1, tmp.length - 2);
         var last = tmp.lastIndexOf('.');
         var packageName = tmp.substr(last + 1, tmp.length - 1);
-        // var text = packageName,
+
+
+        var spritey = makeTextSprite( packageName, 
+        { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
+        // spritey.position.x = block_cube.position.x;
+        // spritey.position.y = 0;
+        // spritey.position.z = block_cube.position.z + block_width / 2;
+        spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
+        console.log("x: " + block_cube.position.x);
+        //console.log("spritey.x: " + spritey.position.x);
+        group.add( spritey );
+
+                // var text = packageName,
              // font_height = 2,
         //     font_size = 10,
         //     curveSegments = 4,
@@ -317,16 +363,6 @@ function createBlocks(positions,offset){
         // textMesh.rotation.x = - Math.PI / 2;
         // textMesh.rotation.y = 0;
         // group.add(textMesh);
-
-        var spritey = makeTextSprite( packageName, 
-        { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-        // spritey.position.x = block_cube.position.x;
-        // spritey.position.y = 0;
-        // spritey.position.z = block_cube.position.z + block_width / 2;
-        spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
-        console.log("x: " + block_cube.position.x);
-        //console.log("spritey.x: " + spritey.position.x);
-        group.add( spritey );
     }
 }
 
@@ -334,7 +370,7 @@ function createBuildings(positions,offset){
     //console.log(positions.length);
     for(var i = 0; i < positions.length; i++){       
         var build = new THREE.BoxGeometry( building_scale, positions[i].height, building_scale);
-        var build_material = new THREE.MeshLambertMaterial( { color: 0xff0000, overdraw: 0.5 } );
+        var build_material = new THREE.MeshLambertMaterial( { color: 0xff0000, overdraw: 0.5, transparent: true, opacity: 0 } );
         var build_cube = new THREE.Mesh( build, build_material  );
 
         build_cube.position.x = positions[i].x - offset;
