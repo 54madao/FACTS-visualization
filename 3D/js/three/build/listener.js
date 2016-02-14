@@ -400,16 +400,16 @@ function onDocumentDblClick(event){
     // }
 }
 
-function moveUsingMatrix(object){
+function moveUsingMatrix(object, min, max){
     // solution 1 using matrix
     console.log("object: " + object.position.x + ", " + object.position.y + ", " + object.position.z);
     console.log("camera: " + camera.position.x + ", " + camera.position.y + ", " + camera.position.z);
     var x = (camera.position.x - object.position.x) / 3;
     var y = (camera.position.y - object.position.y) / 3;
     var z = (camera.position.z - object.position.z) / 3;
-    x = Math.abs(x) < 200 ? x / Math.abs(x) * 200 : x;
-    y = Math.abs(y) < 200 ? y / Math.abs(y) * 200 : y;
-    z = Math.abs(z) < 200 ? z / Math.abs(z) * 200 : z;
+    x = Math.abs(x) < min ? x / Math.abs(x) * min : Math.abs(x) > max ? x / Math.abs(x) * max : x;
+    y = Math.abs(y) < min ? y / Math.abs(y) * min : Math.abs(y) > max ? y / Math.abs(y) * max : y;
+    z = Math.abs(z) < min ? z / Math.abs(z) * min : Math.abs(z) > max ? z / Math.abs(z) * max : z;
     x += object.position.x;
     y += object.position.y;
     z += object.position.z;
@@ -517,7 +517,92 @@ $(document).on('click.jstree', '.jstree-ocl',function(e){
     //showRelatedDocs(true);
 })
 
+$(document).on('dblclick', '.labels',function(e){
+    //e.preventDefault();
+    e.stopImmediatePropagation();
+    console.log(e.target.id);
+    moveUsingMatrix(label_objects[e.target.id], 100, 150);
+    onZoomIn();
+})
 
-function onMouseWheel( e ){
+function onMouseWheel( event ){
+    //createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
+    //createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
+    //console.log("x:" + camera.position.x + ", y:" + camera.position.y + ", z" + camera.position.z);
+    var delta = 0;
 
+    if ( event.wheelDelta !== undefined ) {
+
+        // WebKit / Opera / Explorer 9
+
+        delta = event.wheelDelta;
+
+    } else if ( event.detail !== undefined ) {
+
+        // Firefox
+
+        delta = - event.detail;
+
+    }
+
+    if ( delta > 0 ) {
+
+        onZoomIn();
+        console.log("ZoomIn");
+
+    } else if ( delta < 0 ) {
+
+        onZoomOut();
+        console.log("ZoomOut");
+    }
+
+}
+
+function onZoomIn(){
+    
+    if(camera.position.y > cameraHeight / 3 * 2){
+        if(!showDetail){
+            block_objects.forEach(function(object){
+                //console.log(object);
+                scene.add(object);
+            });
+            for(var key in building_objects){
+                scene.add(building_objects[key]);
+            }
+            for(var key in label_objects){
+                css3dscene.remove(label_objects[key]);
+            }
+            showDetail = true;
+        }else{
+            camera.position.y = cameraHeight / 3 * 2;
+            camera.lookAt(controls.target);
+        }
+    }else if(camera.position.y > cameraHeight / 3){
+        camera.position.y = cameraHeight / 3;
+        camera.lookAt(controls.target);
+    }
+}
+
+function onZoomOut(){
+    if(camera.position.y > cameraHeight / 3 * 2){       
+        if(!showDetail){
+            block_objects.forEach(function(object){
+                //console.log(object);
+                scene.remove(object);
+            });
+            for(var key in building_objects){
+                scene.remove(building_objects[key]);
+            }
+            for(var key in label_objects){
+                css3dscene.add(label_objects[key]);
+            }           
+        }else{
+            camera.position.y = cameraHeight;
+            camera.lookAt(controls.target);
+            showDetail = false;
+        }      
+    }else if(camera.position.y > cameraHeight / 3){
+        camera.position.y = cameraHeight / 3 * 2;
+        camera.lookAt(controls.target);
+    }
 }

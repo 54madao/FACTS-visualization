@@ -180,8 +180,9 @@
         <script src="js/three/build/js/fonts/droid/droid_serif_regular.typeface.js"></script>
         <script src="js/three/build/js/fonts/droid/droid_serif_bold.typeface.js"></script>
 
-        <script type="text/javascript" src="js/three/build/draw.js"></script>
+        
         <script type="text/javascript" src="js/three/build/listener.js"></script>
+        <script type="text/javascript" src="js/three/build/draw.js"></script>
         <script type="text/javascript" src="js/three/build/loader.js"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
@@ -190,7 +191,7 @@
             // main()
             var container, stats, tween;
             var camera, controls, scene, renderer, css3dscene, css3drenderer;
-            var building_objects = [], plane, group;
+            var building_objects = [], label_objects = [], block_objects = [], plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
@@ -199,6 +200,8 @@
 
             var cameraPos0;
             var cameraUp0;
+
+            var cameraHeight;
 
             var onclick_color = 0x00ff00;
             var onhover_color = 0xff00ff;
@@ -214,10 +217,14 @@
 
             var building_border = 5;
             var block_border = 35;
+            var label_border = 20;
             var building_scale =10;
             var text_scale = 30;
+            var fontSize = 40;
 
-            var fileData, linkData, docData;
+            var fileData, linkData, docData, globle_postionts;
+
+            var showDetail = false;
 
             fileData = loadFiles();
             docData = loadDocs();
@@ -234,7 +241,7 @@
 
                 // create camera
                 camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-                camera.position.y = 1500;
+                
                 //camera.lookAt( new THREE.Vector3() );
                 cameraPos0 = camera.position.clone();
                 cameraUp0 = camera.up.clone();
@@ -263,11 +270,12 @@
 
                 //createCity(fileData);
 
-                var positions = calculatePositions(fileData);
-                createBlocks(positions[0], positions[2][0].offset);
-                createBuildings(positions[1], positions[2][0].offset);
-                createBase(positions[2]);
-               
+                globle_postionts = calculatePositions(fileData);
+                createLabels(globle_postionts[0], globle_postionts[3][0].offset);
+                createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
+                createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
+                cameraHeight = createBase(globle_postionts[3]) * 2 / 14 * 12;
+                camera.position.y = cameraHeight;
                 // plane = new THREE.Mesh(
                 //     new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
                 //     new THREE.MeshBasicMaterial( { visible: false } )
@@ -276,6 +284,23 @@
 
                 //var CONTAINER_STYLE = getComputedStyle(container,null);
                 //var CONTAINER_WIDTH = parseInt(CONTAINER_STYLE.getPropertyValue('width'));
+
+                for(var key in label_objects){
+                    css3dscene.add(label_objects[key]);
+                }
+
+
+                //css3drenderer
+                css3drenderer = new THREE.CSS3DRenderer();
+                css3drenderer.setSize( window.innerWidth, window.innerHeight );
+                css3drenderer.domElement.style.position = 'absolute';
+                //css3drenderer.domElement.style.right = "100px";
+                //css3drenderer.domElement.style.right = "200 px";
+                //container.appendChild( css3drenderer.domElement );
+                css3drenderer.domElement.style.top = 0;
+                document.body.appendChild(css3drenderer.domElement);
+
+
                 // create renderer
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
                 renderer.setClearColor(0xffffff, 1);
@@ -291,20 +316,12 @@
                 renderer.domElement.style.zIndex = 5;
                 document.body.appendChild(renderer.domElement);
 
-                //css3drenderer
-                css3drenderer = new THREE.CSS3DRenderer();
-                css3drenderer.setSize( window.innerWidth, window.innerHeight );
-                css3drenderer.domElement.style.position = 'absolute';
-                //css3drenderer.domElement.style.right = "100px";
-                //css3drenderer.domElement.style.right = "200 px";
-                //container.appendChild( css3drenderer.domElement );
-                css3drenderer.domElement.style.top = 0;
-                document.body.appendChild(css3drenderer.domElement);
+
 
                 // create view control
                 controls = new THREE.OrbitControls(this.camera);
-                controls.target.set (0,10,0);
-
+                controls.target.set (0,0,0);
+                controls.maxDistance = cameraHeight;
 
 
 
@@ -315,7 +332,7 @@
                 document.addEventListener( 'click', onDocumentClick, false );
                 document.addEventListener( 'dblclick', onDocumentDblClick, false );
                 window.addEventListener( 'keydown', onKeyDown, false );
-                //window.addEventListener( 'mousewheel', onMouseWheel, false );
+                document.addEventListener( 'mousewheel', onMouseWheel, false );
                 //window.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
                 
                 // var dir = canvasPosition.sub( camera.position ).normalize();
@@ -349,6 +366,7 @@
                 css3drenderer.render( css3dscene, camera);
                 renderer.render( scene, camera );
                 //controls.update();
+                //console.log(cameraHeight);
                 //console.log("x:" + camera.position.x + ", y:" + camera.position.y + ", z" + camera.position.z);
             
 

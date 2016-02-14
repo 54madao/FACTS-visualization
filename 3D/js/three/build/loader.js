@@ -82,7 +82,7 @@ function loadFiles(url){
             console.log(node.attr('id'));
             console.log(building_objects[node.attr('id')]);
             if(building_objects[node.attr('id')] != null)
-                moveUsingMatrix(building_objects[node.attr('id')]);
+                moveUsingMatrix(building_objects[node.attr('id')], 100, 150);
         });; 
 
 

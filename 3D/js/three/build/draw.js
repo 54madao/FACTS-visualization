@@ -174,46 +174,134 @@ function paintPoint(position){
     scene.add( particle );
 }
 
+// function calculatePositions(data){
+//     var block_positions = [];
+//     var building_postitions = [];
+//     var base_position = [];
+//     var numColsBlocks = Math.floor(Math.sqrt(data.codeChangedPackagesList.length)) + 2;
+//     var block_position_x = 0;
+//     var block_position_z = 0;
+//     var maxRowlength = 0;
+//     var maxWidth = 0;
+//     var maxlength = 0;
+
+//     for(var i = 0; i < data.codeChangedPackagesList.length; i++){
+
+//         var numbuildings = data.codeChangedPackagesList[i].codeChangedFileList.length;
+//         var numColsBuildings = Math.ceil(Math.sqrt(numbuildings));
+
+//         var rows = Math.ceil(numbuildings / numColsBuildings);
+//         var width = numColsBuildings * building_scale + (numColsBuildings + 1) * building_border * 2;
+//         var length = width + text_scale;
+//         block_positions.push({
+//             width: width, 
+//             length: length, 
+//             x: block_position_x + width / 2, 
+//             z: block_position_z + length / 2
+//         });
+//         maxRowlength = Math.max(maxRowlength, length);
+//         if(i + 1 == data.codeChangedPackagesList.length){
+//             maxWidth = Math.max(maxWidth, block_position_x + width);
+//             maxlength = block_position_z + maxRowlength;
+//             var base_width = maxWidth + block_border * 4;
+//             var base_length = maxlength + block_border * 4;
+//             var base_size = base_width > base_length ? base_width : base_length ;
+//             base_position.push({
+//                 size: base_size,
+//                 offset: base_size / 2 - block_border * 2
+//             });
+//         }
+
+//         var building_start_x = block_position_x + building_border * 2 + building_scale / 2;
+//         var building_start_z = block_position_z + building_border * 2 + building_scale / 2;
+
+//         var building_postition_x = building_start_x;
+//         var building_postition_z = building_start_z;
+
+//         for(var j = 0; j < numbuildings; j++){
+            
+//             var build_height = data.codeChangedPackagesList[i].codeChangedFileList[j].changedNumberLinesCode;
+//             build_height = (build_height - scale_min) / (scale_max - scale_min) * scale_size;
+
+
+//             building_postitions.push({
+//                 x: building_postition_x, 
+//                 z: building_postition_z,
+//                 height: build_height,
+//                 originalHeight: data.codeChangedPackagesList[i].codeChangedFileList[j].changedNumberLinesCode,
+//                 id: i + "_" + j,
+//                 name: data.codeChangedPackagesList[i].codeChangedFileList[j].codePathName.match(/[^\\/]+\.[^\\/]+$/)[0]
+//             });
+            
+//             if( (j + 1) % numColsBuildings == 0){
+//                 building_postition_z += building_scale + building_border * 2;
+//                 building_postition_x = building_start_x;
+//             }
+//             else{
+//                 building_postition_x += building_scale + building_border * 2;
+//             }
+//         }
+
+//         if((i + 1) % numColsBlocks == 0){
+//             block_position_z += maxRowlength + block_border * 2;
+//             maxWidth = Math.max(maxWidth, block_position_x + width);
+//             block_position_x = 0;
+//             maxRowlength = 0;
+//         }
+//         else{
+//             block_position_x += width + block_border * 2;
+//         }
+//     }
+//     return [block_positions, building_postitions, base_position];
+// }
 function calculatePositions(data){
+    var label_positions = [];
     var block_positions = [];
     var building_postitions = [];
     var base_position = [];
-    var numColsBlocks = Math.floor(Math.sqrt(data.codeChangedPackagesList.length)) + 2;
+    var numColsBlocks = Math.ceil(Math.sqrt(data.codeChangedPackagesList.length));
     var block_position_x = 0;
     var block_position_z = 0;
     var maxRowlength = 0;
     var maxWidth = 0;
     var maxlength = 0;
+    var maxLabelWidth = 0;
 
     for(var i = 0; i < data.codeChangedPackagesList.length; i++){
+        var numbuildings = data.codeChangedPackagesList[i].codeChangedFileList.length;
+        var numColsBuildings = Math.ceil(Math.sqrt(numbuildings));
+        var width = numColsBuildings * building_scale + (numColsBuildings + 1) * building_border * 2;
+        maxLabelWidth = Math.max(maxLabelWidth, width);
+    }
+    console.log("maxLabelWidth: " + maxLabelWidth);
+
+
+    for(var i = 0, label_x = maxLabelWidth / 2, label_z = (maxLabelWidth + text_scale) / 2; i < data.codeChangedPackagesList.length; i++){
+
+        label_positions.push({
+            width: maxLabelWidth,
+            length: maxLabelWidth + text_scale,
+            x: label_x,
+            z: label_z,
+            id: i
+        });
 
         var numbuildings = data.codeChangedPackagesList[i].codeChangedFileList.length;
         var numColsBuildings = Math.ceil(Math.sqrt(numbuildings));
 
-        var rows = Math.ceil(numbuildings / numColsBuildings);
+        //var rows = Math.ceil(numbuildings / numColsBuildings);
         var width = numColsBuildings * building_scale + (numColsBuildings + 1) * building_border * 2;
         var length = width + text_scale;
         block_positions.push({
             width: width, 
             length: length, 
-            x: block_position_x + width / 2, 
-            z: block_position_z + length / 2
+            x: label_x, 
+            z: label_z
         });
-        maxRowlength = Math.max(maxRowlength, length);
-        if(i + 1 == data.codeChangedPackagesList.length){
-            maxWidth = Math.max(maxWidth, block_position_x + width);
-            maxlength = block_position_z + maxRowlength;
-            var base_width = maxWidth + block_border * 4;
-            var base_length = maxlength + block_border * 4;
-            var base_size = base_width > base_length ? base_width : base_length ;
-            base_position.push({
-                size: base_size,
-                offset: base_size / 2 - block_border * 2
-            });
-        }
 
-        var building_start_x = block_position_x + building_border * 2 + building_scale / 2;
-        var building_start_z = block_position_z + building_border * 2 + building_scale / 2;
+
+        var building_start_x = label_x - width / 2 + building_border * 2 + building_scale / 2;
+        var building_start_z = label_z - length / 2 + building_border * 2 + building_scale / 2;
 
         var building_postition_x = building_start_x;
         var building_postition_z = building_start_z;
@@ -242,17 +330,81 @@ function calculatePositions(data){
             }
         }
 
-        if((i + 1) % numColsBlocks == 0){
-            block_position_z += maxRowlength + block_border * 2;
-            maxWidth = Math.max(maxWidth, block_position_x + width);
-            block_position_x = 0;
-            maxRowlength = 0;
-        }
-        else{
-            block_position_x += width + block_border * 2;
+        // if((i + 1) % numColsBlocks == 0){
+        //     block_position_z += maxRowlength + block_border * 2;
+        //     maxWidth = Math.max(maxWidth, block_position_x + width);
+        //     block_position_x = 0;
+        //     maxRowlength = 0;
+        // }
+        // else{
+        //     block_position_x += width + block_border * 2;
+        // }
+
+        if( (i + 1) % numColsBlocks == 0 ){
+            label_x = maxLabelWidth / 2;
+            label_z += maxLabelWidth + text_scale + label_border * 2;
+        }else{
+            label_x += maxLabelWidth + label_border * 2;
         }
     }
-    return [block_positions, building_postitions, base_position];
+
+
+    var base_width = numColsBlocks * maxLabelWidth + (numColsBlocks + 1) * label_border * 2;
+    var rows = Math.ceil(data.codeChangedPackagesList.length / numColsBlocks);
+    var base_length = rows * (maxLabelWidth + text_scale) + (rows + 1) * label_border * 2;
+    var base_size = base_width > base_length ? base_width : base_length;
+    base_position.push({
+        size: base_size,
+        offset: base_size / 2 - label_border * 2
+    });
+
+    return [label_positions, block_positions, building_postitions, base_position];
+}
+
+function createLabels(positions, offset){
+    //console.log(positions.length);
+    //console.log(offset);
+    var group = new THREE.Group();
+    for(var i = 0; i < positions.length; i++){
+
+        //Text
+        var tmp = fileData.codeChangedPackagesList[i].packageName;
+        tmp = tmp.replace(/\\/g, ".").substr(1, tmp.length - 2);
+        var last = tmp.lastIndexOf('.');
+        var packageName = tmp.substr(last + 1, tmp.length - 1);
+
+        var element = document.createElement( 'div' );
+        element.id = i;
+        element.className = 'labels';
+        element.style.backgroundColor = 'rgba(0,127,127,0.5)';
+        element.style.width = positions[i].width + 'px';
+        element.style.height = positions[i].length + 'px';
+        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+        element.style.border= '1px solid rgba(127,255,255,0.25)';
+        element.style.textAlign = "center";
+
+        var content = document.createElement( 'div' );
+        content.textContent = packageName;
+        content.style.position = 'absolute';
+        content.style.top = positions[i].width / 2 - fontSize + 'px';
+        //content.style.verticalAlign = 'middle';
+        content.style.left = '0px';
+        content.style.right = '0px';
+        content.style.fontSize = fontSize + 'px';
+        content.style.fontWeight = 'bold';
+        content.style.color = 'rgba(0,0,0,0.75)';
+        content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+        content.style.wordWrap = "break-word";
+        element.appendChild( content );
+
+        var object = new THREE.CSS3DObject( element );
+        object.position.x = positions[i].x - offset;
+        object.position.y = 0;
+        object.position.z = positions[i].z - offset;
+        object.rotation.x = - Math.PI / 2;
+        //css3dscene.add( object );
+        label_objects[positions[i].id] = object;
+    }
 }
 
 function createBlocks(positions,offset){
@@ -273,40 +425,7 @@ function createBlocks(positions,offset){
         block_cube.position.z = positions[i].z - offset;
 
         //scene.add( group );
-        //group.add( block_cube );
-
-        var element = document.createElement( 'div' );
-        //element.className = 'element';
-        //element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
-        element.style.backgroundColor = 'rgba(0,127,127,0.5)';
-        element.style.width = positions[i].width + 'px';
-        element.style.height = positions[i].length + 'px';
-        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
-        element.style.border= '1px solid rgba(127,255,255,0.25)';
-
-        // var number = document.createElement( 'div' );
-        // number.className = 'number';
-        // number.textContent = 1;
-        // element.appendChild( number );
-
-        // var symbol = document.createElement( 'div' );
-        // symbol.className = 'symbol';
-        // symbol.textContent = "TEST";
-        // element.appendChild( symbol );
-
-        // var details = document.createElement( 'div' );
-        // details.className = 'details';
-        // details.innerHTML = "TEST" + '<br>' + "TEST";
-        // element.appendChild( details );
-
-        //var object = new THREE.CSS3DSprite( element );
-        var object = new THREE.CSS3DObject( element );
-        object.position.x = positions[i].x - offset;
-        object.position.y = 0;
-        object.position.z = positions[i].z - offset;
-        object.rotation.x = - Math.PI / 2;
-        css3dscene.add( object );
-
+        group.add( block_cube );
 
 
         //Text
@@ -314,7 +433,6 @@ function createBlocks(positions,offset){
         tmp = tmp.replace(/\\/g, ".").substr(1, tmp.length - 2);
         var last = tmp.lastIndexOf('.');
         var packageName = tmp.substr(last + 1, tmp.length - 1);
-
 
         var spritey = makeTextSprite( packageName, 
         { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
@@ -326,6 +444,7 @@ function createBlocks(positions,offset){
         //console.log("spritey.x: " + spritey.position.x);
         group.add( spritey );
 
+        block_objects.push(group);
                 // var text = packageName,
              // font_height = 2,
         //     font_size = 10,
@@ -370,14 +489,14 @@ function createBuildings(positions,offset){
     //console.log(positions.length);
     for(var i = 0; i < positions.length; i++){       
         var build = new THREE.BoxGeometry( building_scale, positions[i].height, building_scale);
-        var build_material = new THREE.MeshLambertMaterial( { color: 0xff0000, overdraw: 0.5, transparent: true, opacity: 0 } );
+        var build_material = new THREE.MeshLambertMaterial( { color: 0xff0000, overdraw: 0.5, transparent: true, opacity: 1 } );
         var build_cube = new THREE.Mesh( build, build_material  );
 
         build_cube.position.x = positions[i].x - offset;
         build_cube.position.y = positions[i].height / 2;
         build_cube.position.z = positions[i].z - offset;
         build_cube.name = positions[i].name + " (" + positions[i].originalHeight +" LOC)";
-        scene.add( build_cube );
+        //scene.add( build_cube );
         building_objects[positions[i].id] = build_cube;
     }
 }
@@ -393,7 +512,8 @@ function createBase(position){
     // var b = position[0].b;
     // var c = position[0].c;
     // var d = position[0].d;
-    step = block_border * 2;
+    //step = block_border * 2;
+    step = label_border * 2;
     size = Math.ceil(position[0].size / step) * step / 2;
     console.log("size: " + size);
    
@@ -420,6 +540,7 @@ function createBase(position){
     scene.add( group );
     group.add( base_line );
     //scene.add( base_line );
+    return size;
 }
 
 function makeTextSprite( message, parameters )
