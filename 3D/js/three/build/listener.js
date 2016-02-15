@@ -138,6 +138,7 @@ function onDocumentClick( event ) {
 
     // add stoppropagate to jstree.js
     event.preventDefault();
+    //event.stopPropagation();
 
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
@@ -504,6 +505,16 @@ $(document).on('click', 'a[data-toggle="collapse"]',function(e){
     //$('#collapse_list').collapse('toggle');
     //showRelatedDocs(true);
 })
+
+// $(document).on('click', '#circles-slider', function(e){
+//     //e.preventDefault();
+//     e.stopImmediatePropagation();
+//     //console.log(e.target.width());
+//     //var target = $(this).href;
+//     //console.log(target);
+//     //$('#collapse_list').collapse('toggle');
+//     //showRelatedDocs(true);
+// })
 
 //e.stopImmediatePropagation();
 

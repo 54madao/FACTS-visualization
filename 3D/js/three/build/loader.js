@@ -1,6 +1,6 @@
 function loadFiles(url){
 	var res;
-	url = 'http://jsonstub.com/FACTS/codeChangeSample-2.1.0-2.1.10';
+	//url = 'http://jsonstub.com/FACTS/codeChangeSample-2.1.0-2.1.10';
 	//url = 'http://jsonstub.com/FACTS/codeChangeSample1-2.1.10-2.1.11';	
 	$.ajax({
 	    type: 'GET',
@@ -88,7 +88,10 @@ function loadFiles(url){
 
 	    res = data;
 	    //alert(JSON.stringify(res, null, 4));
-	});
+	}).fail(function() {
+        console.log("fail");
+        return null;
+    })
 	//alert(JSON.stringify(res, null, 4));
 	return res;
 }
@@ -157,4 +160,90 @@ function loadDocs(url){
     	res = data;
 	});
 	return res;
+}
+
+function loadVersions(){
+    var res;
+
+    $.ajax({
+        type: 'GET',
+        url: 'http://jsonstub.com/FACTS/codeVersions',
+        contentType: 'application/json',
+        beforeSend: function (request) {
+            request.setRequestHeader('JsonStub-User-Key', 'db3469d5-0f9f-4a58-bac5-c343433fa8a4');
+            request.setRequestHeader('JsonStub-Project-Key', '29fa3925-9a60-40bb-bd4c-fd509dd582d0');
+        },
+        async: false
+    }).done(function (data) {
+        // $( "#slider-range" ).slider({
+        //     range: true,
+        //     min: 0,
+        //     max: data.length,
+        //     values: [ 0, 0 ],
+        //     step: 1,
+        //     slide: function( event, ui ) {
+        //         //$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+        //         event.stopImmediatePropagation();
+        //     }
+        // });
+        // // .each(function(){
+        // //     console.log("len:" + data.length);
+        // //     for(var i = 0; i < data.length; i++){
+        // //         // Create a new element and position it with percentages
+        // //         var el = $('<label>' + data[i].versionNum + '</label>').css({
+        // //             'left': (i/data.length*100) + '%',
+        // //             'fontSize': "12px"
+        // //         });
+
+        // //         // Add the element inside #slider
+        // //         $("#slider-range").append(el);
+        // //     }
+        // // });
+        var options = [];
+        for(var i = 0; i < data.length; i++){
+          options.push(data[i].versionNum);
+        }
+        // var width = $( "#slider-range" ).width() / (data.length - 1);
+
+        // //after the slider create a containing div with p tags of a set width.
+        // $( "#slider-range" ).after('<div class="ui-slider-legend"><p style="width:' + width + 'px;display:inline-block;">' + options.join('</p><p style="width:' + width + 'px;display:inline-block">') +'</p></div>');
+        
+        $("#circles-slider").slider({
+            min: 0,
+            max: data.length - 1,
+            values: [ 0, 0 ],
+            step: 1,
+            slide: function( event, ui ) {
+                //$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+                event.stopImmediatePropagation();
+            },
+            stop: function( event, ui ) {
+                //$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+                event.stopImmediatePropagation();
+                //console.log("$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ])
+                console.log(options[ui.values[ 0 ]] + " | " + options[ui.values[ 1 ]]);
+                var url = 'http://jsonstub.com/FACTS/codeChangeSample-' + options[ui.values[ 0 ]] + '-' + options[ui.values[ 1 ]];
+                fileData = loadFiles(url);
+                // if(fileData == null)
+                //     console.log(fileData);
+                sceneClear();
+                if(fileData != null){
+                    sceneInit();
+                }
+                //console.log(fileData);
+            }
+        }).slider("pips", {
+            rest: "label",
+            labels: options
+        })                 
+        .slider("float", {
+            labels: options
+        });
+
+
+
+        res = data;
+    });
+
+    return res;
 }

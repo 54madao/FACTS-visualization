@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="js/jstree/dist/themes/default/style.min.css" />
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.css"/>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.theme.css"/>
+        <link rel="stylesheet" type="text/css" href="js/jQuery-ui-Slider-Pips-1.11.0/dist/jquery-ui-slider-pips.min.css">
         <style type="text/css">
             .list_left { 
                 color: ffff; 
@@ -37,8 +38,9 @@
                 color: ffff;
                 position: absolute;
                 padding: 10px;
-                width: 100%;
                 text-align: center;
+                left: 350px;
+                right: 300px;
             }
             #changes{
                 border-right-style: groove;
@@ -102,6 +104,8 @@
                 font-size: 12px;
                 color: rgba(127,255,255,0.75);
             }
+
+
         </style>
     </head>        
 
@@ -147,12 +151,13 @@
                 </div>
             </div>
         </div>
+        
+        <div id="info"><span id="version1">version1</span><span> | </span><span id="version2">version2</span>
+            <div id="circles-slider"></div>
+        </div>
         <div id="3d">
 
         </div>
-        <div id="info"><span id="version1">version1</span><span> | </span><span id="version2">version2</span>
-        </div>
-
         <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
         <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -160,6 +165,8 @@
         <script src="js/jstree/dist/jstree.min.js"></script>
 
         <script src="js/jquery-ui-1.11.4/jquery-ui.js"></script>
+        <script src="js/jQuery-ui-Slider-Pips-1.11.0/dist/jquery-ui-slider-pips.min.js"></script>
+
 
         <script src="js/three/build/three.js"></script>
         <script src="js/three/build/js/controls/OrbitControls.js"></script>
@@ -191,7 +198,7 @@
             // main()
             var container, stats, tween;
             var camera, controls, scene, renderer, css3dscene, css3drenderer;
-            var building_objects = [], label_objects = [], block_objects = [], plane, group;
+            var building_objects = [], label_objects = [], block_objects = [], base_object, plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
@@ -222,12 +229,13 @@
             var text_scale = 30;
             var fontSize = 40;
 
-            var fileData, linkData, docData, globle_postionts;
+            var fileData, linkData, docData, vData, globle_postionts;
 
             var showDetail = false;
 
-            fileData = loadFiles();
+            //fileData = loadFiles();
             docData = loadDocs();
+            vData = loadVersions();
             //console.log(JSON.stringify(fileData, null, 4));
             init();
             animate();
@@ -241,7 +249,7 @@
 
                 // create camera
                 camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-                
+                camera.position.y = 1500;
                 //camera.lookAt( new THREE.Vector3() );
                 cameraPos0 = camera.position.clone();
                 cameraUp0 = camera.up.clone();
@@ -269,13 +277,21 @@
                 //createBase(fileData);
 
                 //createCity(fileData);
+                //createSlider();
 
-                globle_postionts = calculatePositions(fileData);
-                createLabels(globle_postionts[0], globle_postionts[3][0].offset);
-                createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
-                createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
-                cameraHeight = createBase(globle_postionts[3]) * 2 / 14 * 12;
-                camera.position.y = cameraHeight;
+                // if(fileData != null){
+                //     globle_postionts = calculatePositions(fileData);
+                //     createLabels(globle_postionts[0], globle_postionts[3][0].offset);
+                //     createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
+                //     createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
+                //     cameraHeight = createBase(globle_postionts[3]) * 2 / 14 * 14;
+                //     camera.position.y = cameraHeight;
+
+                //     for(var key in label_objects){
+                //         css3dscene.add(label_objects[key]);
+                //     }
+                // }
+                
                 // plane = new THREE.Mesh(
                 //     new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
                 //     new THREE.MeshBasicMaterial( { visible: false } )
@@ -285,9 +301,7 @@
                 //var CONTAINER_STYLE = getComputedStyle(container,null);
                 //var CONTAINER_WIDTH = parseInt(CONTAINER_STYLE.getPropertyValue('width'));
 
-                for(var key in label_objects){
-                    css3dscene.add(label_objects[key]);
-                }
+                
 
 
                 //css3drenderer
@@ -296,9 +310,9 @@
                 css3drenderer.domElement.style.position = 'absolute';
                 //css3drenderer.domElement.style.right = "100px";
                 //css3drenderer.domElement.style.right = "200 px";
-                //container.appendChild( css3drenderer.domElement );
+                container.appendChild( css3drenderer.domElement );
                 css3drenderer.domElement.style.top = 0;
-                document.body.appendChild(css3drenderer.domElement);
+                //document.body.appendChild(css3drenderer.domElement);
 
 
                 // create renderer
@@ -311,15 +325,15 @@
                 // renderer.shadowMap.enabled = true;
                 // renderer.shadowMap.type = THREE.PCFShadowMap;
                 //renderer.domElement.style.position = "absolute";
-                //container.appendChild( renderer.domElement );
+                container.appendChild( renderer.domElement );
                 //container.insertBefore(renderer.domElement, container.firstChild);
                 renderer.domElement.style.zIndex = 5;
-                document.body.appendChild(renderer.domElement);
+                //document.body.appendChild(renderer.domElement);
 
 
 
                 // create view control
-                controls = new THREE.OrbitControls(this.camera);
+                controls = new THREE.OrbitControls(this.camera, container);
                 controls.target.set (0,0,0);
                 controls.maxDistance = cameraHeight;
 
@@ -330,6 +344,7 @@
                 document.addEventListener( 'mousemove', onDocumentMouseMove, false );   
                 window.addEventListener( 'resize', onWindowResize, false );
                 document.addEventListener( 'click', onDocumentClick, false );
+                //$('#3d').on('click', onDocumentClick);
                 document.addEventListener( 'dblclick', onDocumentDblClick, false );
                 window.addEventListener( 'keydown', onKeyDown, false );
                 document.addEventListener( 'mousewheel', onMouseWheel, false );
@@ -347,7 +362,9 @@
                 // cameraPoint.scale.x = cameraPoint.scale.y = 50;
                 // cameraPoint.position.copy(cameraPosition);
                 // scene.add(cameraPoint);
-
+                // d3.json("miserables.json", function(error, root){
+                //     console.log('!!!');
+                // });
             }
 
                     //

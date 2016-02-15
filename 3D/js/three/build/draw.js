@@ -152,6 +152,73 @@
 //     // };
 // }
 
+function sceneInit(){
+    // create camera
+    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+    //camera.position.y = 1000;
+    //camera.lookAt( new THREE.Vector3() );
+    cameraPos0 = camera.position.clone();
+    cameraUp0 = camera.up.clone();
+    // create scene and add globle light
+    // scene = new THREE.Scene();
+    // scene.add( new THREE.AmbientLight( 0x505050 ) );
+
+    // css3dscene = new THREE.Scene();
+
+    // // create specific light
+    // var light = new THREE.SpotLight( 0xffffff, 1.5 );
+    // light.position.set( 0, 500, 2000 );
+    // light.castShadow = true;
+    // light.shadowCameraNear = 200;
+    // light.shadowCameraFar = camera.far;
+    // light.shadowCameraFov = 50;
+    // light.shadowBias = -0.00022;
+    // light.shadowMapWidth = 2048;
+    // light.shadowMapHeight = 2048;
+    // scene.add( light );
+
+
+
+
+    globle_postionts = calculatePositions(fileData);
+    createLabels(globle_postionts[0], globle_postionts[3][0].offset);
+    createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
+    createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
+    cameraHeight = createBase(globle_postionts[3]) * 2 / 14 * 14;
+    camera.position.y = cameraHeight;
+    
+    for(var key in label_objects){
+        css3dscene.add(label_objects[key]);
+    }
+
+    var target = new THREE.Vector3(0, 0, 0);
+    //camera.lookAt(0,0,0);
+    //controls.target.set(0,0,0);
+    //css3drenderer.render( css3dscene, camera);
+    //renderer.render( scene, camera );
+     // create view control
+    controls = new THREE.OrbitControls(this.camera);
+    controls.target.set (0,0,0);
+    controls.maxDistance = cameraHeight;
+}
+
+function sceneClear(){
+    block_objects.forEach(function(object){
+        //console.log(object);
+        scene.remove(object);
+    });
+    for(var key in building_objects){
+        scene.remove(building_objects[key]);
+    }
+    for(var key in label_objects){
+        css3dscene.remove(label_objects[key]);
+    }
+    scene.remove(base_object);
+    block_objects = [];
+    building_objects = [];
+    label_objects = [];
+}
+
 function createVerticalSlider(){
     $( "#slider-vertical" ).slider({
       orientation: "vertical",
@@ -440,7 +507,7 @@ function createBlocks(positions,offset){
         // spritey.position.y = 0;
         // spritey.position.z = block_cube.position.z + block_width / 2;
         spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
-        console.log("x: " + block_cube.position.x);
+        //console.log("x: " + block_cube.position.x);
         //console.log("spritey.x: " + spritey.position.x);
         group.add( spritey );
 
@@ -540,6 +607,7 @@ function createBase(position){
     scene.add( group );
     group.add( base_line );
     //scene.add( base_line );
+    base_object = group;
     return size;
 }
 
@@ -620,6 +688,19 @@ function roundRect(ctx, x, y, w, h, r)
     ctx.closePath();
     ctx.fill();
     ctx.stroke();   
+}
+
+function createSlider(){
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 0,
+      max: 500,
+      values: [ 75, 300 ],
+      slide: function( event, ui ) {
+        //$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+        event.stopImmediatePropagation();
+      }
+    });
 }
 
 
