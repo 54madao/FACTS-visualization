@@ -345,13 +345,7 @@ function calculatePositions(data){
 
     for(var i = 0, label_x = maxLabelWidth / 2, label_z = (maxLabelWidth + text_scale) / 2; i < data.codeChangedPackagesList.length; i++){
 
-        label_positions.push({
-            width: maxLabelWidth,
-            length: maxLabelWidth + text_scale,
-            x: label_x,
-            z: label_z,
-            id: i
-        });
+        
 
         var numbuildings = data.codeChangedPackagesList[i].codeChangedFileList.length;
         var numColsBuildings = Math.ceil(Math.sqrt(numbuildings));
@@ -359,12 +353,7 @@ function calculatePositions(data){
         //var rows = Math.ceil(numbuildings / numColsBuildings);
         var width = numColsBuildings * building_scale + (numColsBuildings + 1) * building_border * 2;
         var length = width + text_scale;
-        block_positions.push({
-            width: width, 
-            length: length, 
-            x: label_x, 
-            z: label_z
-        });
+        
 
 
         var building_start_x = label_x - width / 2 + building_border * 2 + building_scale / 2;
@@ -373,9 +362,11 @@ function calculatePositions(data){
         var building_postition_x = building_start_x;
         var building_postition_z = building_start_z;
 
+        var sum = 0;
         for(var j = 0; j < numbuildings; j++){
             
             var build_height = data.codeChangedPackagesList[i].codeChangedFileList[j].changedNumberLinesCode;
+            sum += build_height;
             build_height = (build_height - scale_min) / (scale_max - scale_min) * scale_size;
 
 
@@ -396,7 +387,21 @@ function calculatePositions(data){
                 building_postition_x += building_scale + building_border * 2;
             }
         }
+        label_positions.push({
+            width: maxLabelWidth,
+            length: maxLabelWidth + text_scale,
+            x: label_x,
+            z: label_z,
+            id: i,
+            total: sum
+        });
 
+        block_positions.push({
+            width: width, 
+            length: length, 
+            x: label_x, 
+            z: label_z
+        });
         // if((i + 1) % numColsBlocks == 0){
         //     block_position_z += maxRowlength + block_border * 2;
         //     maxWidth = Math.max(maxWidth, block_position_x + width);
@@ -434,6 +439,16 @@ function createLabels(positions, offset){
     var group = new THREE.Group();
     for(var i = 0; i < positions.length; i++){
 
+
+        var green = 0, red = 255;
+        if(positions[i].total < 100){
+            red = Math.round(positions[i].total / 100 * 255);
+            green = 255;
+        }else if(positions[i].total < 500){
+            green = Math.round(255 - (positions[i].total - 100) / 500 * 255);
+        }
+
+        console.log("p: " + positions[i].total + ', r: '+ red + ', g: ' + green);
         //Text
         var tmp = fileData.codeChangedPackagesList[i].packageName;
         tmp = tmp.replace(/\\/g, ".").substr(1, tmp.length - 2);
@@ -443,7 +458,8 @@ function createLabels(positions, offset){
         var element = document.createElement( 'div' );
         element.id = i;
         element.className = 'labels';
-        element.style.backgroundColor = 'rgba(0,127,127,0.5)';
+        element.style.backgroundColor = 'rgba(' + red + ',' + green + ',0,0.5)';
+        //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
         element.style.width = positions[i].width + 'px';
         element.style.height = positions[i].length + 'px';
         element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
@@ -512,6 +528,7 @@ function createBlocks(positions,offset){
         group.add( spritey );
 
         block_objects.push(group);
+
                 // var text = packageName,
              // font_height = 2,
         //     font_size = 10,
@@ -562,7 +579,7 @@ function createBuildings(positions,offset){
         build_cube.position.x = positions[i].x - offset;
         build_cube.position.y = positions[i].height / 2;
         build_cube.position.z = positions[i].z - offset;
-        build_cube.name = positions[i].name + " (" + positions[i].originalHeight +" LOC)";
+        build_cube.name = positions[i].id + "#" + positions[i].name + " (" + positions[i].originalHeight +" LOC)";
         //scene.add( build_cube );
         building_objects[positions[i].id] = build_cube;
     }

@@ -167,7 +167,10 @@ function onDocumentClick( event ) {
                 //if(SELECTED != INTERSECTED)
                 //SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 material.emissive.setHex(onclick_color);
-                $("a[href='#collapse_list']").text(SELECTED.name);
+                $("a[href='#collapse_list']").text(SELECTED.name.split('#')[1]);
+                $('#changes').jstree('open_node', SELECTED.name.split('#')[0].split('_')[0]);
+                console.log(SELECTED.name.split('#')[0]);
+                $('#changes').jstree('select_node', SELECTED.name.split('#')[0]);
                 showRelatedDocs(true);
 
                 // // to right
@@ -264,7 +267,7 @@ $('#changes').on('select_node.jstree', function(e, data){
     event.stopImmediatePropagation();
     //event.stopPropagation();
     if(building_objects[data.selected] != null){
-        $("a[href='#collapse_list']").text(building_objects[data.selected].name);
+        $("a[href='#collapse_list']").text(building_objects[data.selected].name.split('#')[1]);
         if(SELECTED){
             SELECTED.material.emissive.setHex(SELECTED.currentHex);    
         }
@@ -314,7 +317,7 @@ function onDocumentDblClick(event){
     var intersects = raycaster.intersectObjects( scene.children ), material;
     //console.log(intersects.length);
     if (intersects.length > 0){
-       moveUsingMatrix(intersects[0].object);
+        moveUsingMatrix(intersects[0].object);
         
         //controls.update();
 
@@ -506,15 +509,15 @@ $(document).on('click', 'a[data-toggle="collapse"]',function(e){
     //showRelatedDocs(true);
 })
 
-// $(document).on('click', '#circles-slider', function(e){
-//     //e.preventDefault();
-//     e.stopImmediatePropagation();
-//     //console.log(e.target.width());
-//     //var target = $(this).href;
-//     //console.log(target);
-//     //$('#collapse_list').collapse('toggle');
-//     //showRelatedDocs(true);
-// })
+$(document).on('mousedown', '#circles-slider', function(e){
+    //e.preventDefault();
+    e.stopImmediatePropagation();
+    //console.log(e.target.width());
+    //var target = $(this).href;
+    //console.log(target);
+    //$('#collapse_list').collapse('toggle');
+    //showRelatedDocs(true);
+})
 
 //e.stopImmediatePropagation();
 
@@ -534,6 +537,7 @@ $(document).on('dblclick', '.labels',function(e){
     console.log(e.target.id);
     moveUsingMatrix(label_objects[e.target.id], 100, 150);
     onZoomIn();
+    $('#changes').jstree('open_node', e.target.id);
 })
 
 function onMouseWheel( event ){

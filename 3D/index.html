@@ -13,7 +13,6 @@
         <link rel="stylesheet" type="text/css" href="js/jQuery-ui-Slider-Pips-1.11.0/dist/jquery-ui-slider-pips.min.css">
         <style type="text/css">
             .list_left { 
-                color: ffff; 
                 font-weight: bold; 
                 font-size: 12px; 
                 z-index: 100;
@@ -24,7 +23,6 @@
                 left: 0px;
             }
             .list_right { 
-                color: ffff; 
                 font-weight: bold; 
                 font-size: 12px; 
                 z-index: 100;
@@ -35,12 +33,13 @@
                 right: 0px;
             }
             #info {
-                color: ffff;
                 position: absolute;
+                top: 0px; 
                 padding: 10px;
                 text-align: center;
                 left: 350px;
                 right: 300px;
+                z-index: 100;
             }
             #changes{
                 border-right-style: groove;
@@ -110,6 +109,8 @@
     </head>        
 
     <body>
+       
+
         <div class="list_left" > 
             <!-- Nav tabs -->
             <ul class="nav nav-tabs nav-justified" role="tablist" id="left_tab">
@@ -129,9 +130,7 @@
                 </div>
             </div>
         </div>
-        <div id="slider-vertical">
 
-        </div>
         <div class="list_right">
             
             <div class="panel panel-default" id="right_tab">
@@ -152,10 +151,11 @@
             </div>
         </div>
         
-        <div id="info"><span id="version1">version1</span><span> | </span><span id="version2">version2</span>
+        <div id="info"><span id="version1"></span><span> | </span><span id="version2"></span>
             <div id="circles-slider"></div>
         </div>
-        <div id="3d">
+
+        <div id="main">
 
         </div>
         <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
@@ -191,6 +191,7 @@
         <script type="text/javascript" src="js/three/build/listener.js"></script>
         <script type="text/javascript" src="js/three/build/draw.js"></script>
         <script type="text/javascript" src="js/three/build/loader.js"></script>
+       <!-- <script type="text/javascript" src="js/three/build/vis.js"></script>-->
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
 
@@ -243,7 +244,7 @@
             function init() {
 
                 // HTML DOC
-                container = document.getElementById("3d");
+                container = document.getElementById("main");
                 
                 //document.body.appendChild( container );
 
@@ -301,7 +302,9 @@
                 //var CONTAINER_STYLE = getComputedStyle(container,null);
                 //var CONTAINER_WIDTH = parseInt(CONTAINER_STYLE.getPropertyValue('width'));
 
-                
+                // container.style.width = window.innerWidth;
+                // container.style.height = window.innerHeight;
+                // container.style.backgroundColor="#00FF00";
 
 
                 //css3drenderer
@@ -312,10 +315,12 @@
                 //css3drenderer.domElement.style.right = "200 px";
                 container.appendChild( css3drenderer.domElement );
                 css3drenderer.domElement.style.top = 0;
+                css3drenderer.domElement.style.zIndex = 0;
+                //css3drenderer.domElement.style.backgroundColor="#00FF00";
                 //document.body.appendChild(css3drenderer.domElement);
 
 
-                // create renderer
+                //create renderer
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
                 renderer.setClearColor(0xffffff, 1);
                 renderer.setPixelRatio( window.devicePixelRatio );
@@ -327,13 +332,14 @@
                 //renderer.domElement.style.position = "absolute";
                 container.appendChild( renderer.domElement );
                 //container.insertBefore(renderer.domElement, container.firstChild);
-                renderer.domElement.style.zIndex = 5;
+                renderer.domElement.style.zIndex = 0;
+                //renderer.domElement.style.backgroundColor="#00FF00";
                 //document.body.appendChild(renderer.domElement);
 
 
 
                 // create view control
-                controls = new THREE.OrbitControls(this.camera, container);
+                controls = new THREE.OrbitControls(this.camera);
                 controls.target.set (0,0,0);
                 controls.maxDistance = cameraHeight;
 
