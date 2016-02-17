@@ -101,6 +101,7 @@ function loadFiles(url){
                 SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 SELECTED.material.emissive.setHex(onclick_color);
                 showRelatedDocs(true);
+                //showRelation(SELECTED);
             }
             else{
                 // showRelatedDocs(false);

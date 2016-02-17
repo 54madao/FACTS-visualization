@@ -470,6 +470,7 @@ function createLabels(positions, offset){
         element.id = i;
         element.className = 'labels';
         element.style.backgroundColor = 'rgba(' + red + ',' + green + ',0,0.5)';
+        //element.style.backgroundBlendMode = 'normal';
         //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
         element.style.width = positions[i].width + 'px';
         element.style.height = positions[i].length + 'px';
@@ -533,12 +534,14 @@ function createBlocks(positions,offset){
         element.id = i;
         element.className = 'labels';
         element.style.backgroundColor = 'rgba(0,127,127,0.5)';
+        //element.style.backgroundBlendMode = 'normal';
         //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
         element.style.width = positions[i].width + 'px';
         element.style.height = text_scale + 'px';
         element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
         element.style.border= '1px solid rgba(127,255,255,0.25)';
         element.style.textAlign = "center";
+        //element.style.zIndex = 0;
 
         var content = document.createElement( 'div' );
         content.textContent = packageName;

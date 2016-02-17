@@ -309,6 +309,22 @@
                 // container.style.backgroundColor="#00FF00";
 
 
+                //create renderer
+                renderer = new THREE.WebGLRenderer( { antialias: true } );
+                renderer.setClearColor(0xffffff, 1);
+                renderer.setPixelRatio( window.devicePixelRatio );
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                //renderer.setSize( CONTAINER_WIDTH, window.innerHeight );
+                // renderer.sortObjects = false;
+                // renderer.shadowMap.enabled = true;
+                // renderer.shadowMap.type = THREE.PCFShadowMap;
+                //renderer.domElement.style.position = "absolute";
+                container.appendChild( renderer.domElement );
+                //container.insertBefore(renderer.domElement, container.firstChild);
+                renderer.domElement.style.zIndex = 1;
+                //renderer.domElement.style.backgroundColor="#00FF00";
+                //document.body.appendChild(renderer.domElement);
+                
                 //css3drenderer
                 css3drenderer = new THREE.CSS3DRenderer();
                 css3drenderer.setSize( window.innerWidth, window.innerHeight );
@@ -322,21 +338,6 @@
                 //document.body.appendChild(css3drenderer.domElement);
 
 
-                //create renderer
-                renderer = new THREE.WebGLRenderer( { antialias: true } );
-                renderer.setClearColor(0xffffff, 1);
-                renderer.setPixelRatio( window.devicePixelRatio );
-                renderer.setSize( window.innerWidth, window.innerHeight );
-                //renderer.setSize( CONTAINER_WIDTH, window.innerHeight );
-                // renderer.sortObjects = false;
-                // renderer.shadowMap.enabled = true;
-                // renderer.shadowMap.type = THREE.PCFShadowMap;
-                //renderer.domElement.style.position = "absolute";
-                container.appendChild( renderer.domElement );
-                //container.insertBefore(renderer.domElement, container.firstChild);
-                renderer.domElement.style.zIndex = 0;
-                //renderer.domElement.style.backgroundColor="#00FF00";
-                //document.body.appendChild(renderer.domElement);
 
 
 

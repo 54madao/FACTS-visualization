@@ -289,7 +289,6 @@ function showRelatedCode(on){
 }
 
 
-$('#changes')
 
 $(document).on('click', "a[role='button']",function(event){
     //event.preventDefault();
@@ -437,33 +436,153 @@ function moveUsingMatrix(object, min, max){
     controls.target.set(object.position.x, object.position.y, object.position.z);
 }
 
-function showRelation(){
-    var element = document.createElement( 'div' );
-    element.className = 'element';
-    element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
+function showRelation(object){
+    // var element = document.createElement( 'div' );
+    // element.className = 'element';
+    // element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
 
-    var number = document.createElement( 'div' );
-    number.className = 'number';
-    number.textContent = 1;
-    element.appendChild( number );
+    // var number = document.createElement( 'div' );
+    // number.className = 'number';
+    // number.textContent = 1;
+    // element.appendChild( number );
 
-    var symbol = document.createElement( 'div' );
-    symbol.className = 'symbol';
-    symbol.textContent = "TEST";
-    element.appendChild( symbol );
+    // var symbol = document.createElement( 'div' );
+    // symbol.className = 'symbol';
+    // symbol.textContent = "TEST";
+    // element.appendChild( symbol );
 
-    var details = document.createElement( 'div' );
-    details.className = 'details';
-    details.innerHTML = "TEST" + '<br>' + "TEST";
-    element.appendChild( details );
+    // var details = document.createElement( 'div' );
+    // details.className = 'details';
+    // details.innerHTML = "TEST" + '<br>' + "TEST";
+    // element.appendChild( details );
 
-    var object = new THREE.CSS3DSprite( element );
-    //var object = new THREE.CSS3DObject( element );
-    object.position.x = 0;
-    object.position.y = 0;
-    object.position.z = 0;
-    //object.rotation.x = - Math.PI / 2;
-    css3dscene.add( object );
+    // var object = new THREE.CSS3DSprite( element );
+    // //var object = new THREE.CSS3DObject( element );
+    // object.position.x = 0;
+    // object.position.y = 0;
+    // object.position.z = 0;
+    // //object.rotation.x = - Math.PI / 2;
+    // css3dscene.add( object );
+    var container = document.createElement( 'div' );
+    //container.style.maxHeight = (function(){return window.innerHeight - 100});
+    //container.style.width = (function(){return window.innerWidth / 5})
+    container.style.width = '300px'
+    container.style.borderStyle = 'groove';
+    container.style.overflow = 'auto';
+    // var container = $('<div>').css({
+    //         'max-height': (function(){return window.innerHeight - 100}),
+    //         'width': (function(){return window.innerWidth / 5}),
+    //         "border-right-style": 'groove',
+    //         "border-bottom-style": 'groove',
+    //         'overflow': 'auto'
+    //     });
+    var header = document.createElement( 'div' );
+    header.className = "nav nav-tabs nav-justified";
+    header.textContent = object.name.split('#')[1];
+    header.setAttribute('role', "tablist");
+    //header.style.position = 'absolute';
+    //header.style.fontSize = 12 + 'px';
+    //header.style.fontWeight = 'bold';
+    //header.style.color = 'rgba(0,0,0,0.75)';
+    //header.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+    container.appendChild(header);
+
+    var list = document.createElement( 'div' );
+    list.className = "panel-group";
+    list.id = "accordion";
+    list.setAttribute('role', "tablist");
+    list.setAttribute('aria-multiselectable', 'true');
+    container.appendChild(list);
+
+    var num = Math.floor(Math.random() * 5) + 1;   
+    for (var i = 0; i < num; i++) {
+        var index = Math.floor(Math.random() * 6);
+        
+        var l1 = document.createElement( 'div' );
+        l1.className = "panel panel-default";
+        list.appendChild(l1);
+
+        var l21 = document.createElement( 'div' );
+        l21.className = "panel-heading";
+        l21.setAttribute('role', "tab");
+        l21.id = "relatedheading"+index;
+        l1.appendChild(l21);
+
+        var l31 = document.createElement( 'h4' );
+        l31.className = "panel-title";
+        l21.appendChild(l31);
+
+        var l41 = document.createElement( 'a' );
+        l41.setAttribute('role', "button");
+        l41.href = "#linkedcollapse"+index;
+        l41.setAttribute('data-toggle', "collapse");
+        l41.setAttribute('aria-expanded', "false");
+        l41.setAttribute('aria-controls', "linkedcollapse"+index);
+        l41.setAttribute('data-parent',"#accordion");
+        l41.textContent = docData[index].key;
+        l31.appendChild(l41);
+
+        var l22 = document.createElement( 'div' );
+        l22.className = "panel-collapse collapse";
+        l22.setAttribute('role', "tabpanel");
+        l22.id = "linkedcollapse"+index;
+        l22.setAttribute('aria-labelledby', "relatedheading"+index);
+        l1.appendChild(l22);
+
+        var l32 = document.createElement( 'div' );
+        l32.className = "panel-body";
+        l32.innerHTML = '<p>' + 
+                        docData[i].summary + "<br/><br/>" +
+                        "#" + docData[i].number + "<br/><br/>" +
+                        "Committed By " + docData[i].committer + "<br/>" +
+                        "Committed on " + docData[i].date + "<br/><br/>"+
+                        "Created By " + docData[i].author +
+                        '</p>';
+        l22.appendChild(l32);
+
+        // list.append(
+        //     $('<div>').addClass("panel panel-default").append(
+        //         $('<div>').attr({class: "panel-heading", role: "tab", id: "relatedheading"+index}).append(
+
+        //             $('<h4>').addClass("panel-title").append(
+
+        //                 $('<a>').attr({
+        //                     role: "button",
+        //                     'data-toggle': "collapse",
+        //                     //'data-parent': "#doc_list",
+        //                     href: "#relatedcollapse"+index,
+        //                     'aria-expanded': "false",
+        //                     'aria-controls': "relatedcollapse"+index
+        //                 }).text(docData[index].key)
+        //                 // $('<a>').attr({href: "#", class: "pull-right"}).append(
+        //                 //     $('<span>').addClass("glyphicon glyphicon-th-list")
+        //                 // )
+                        
+        //             )
+        //         ),
+        //         $('<div>').attr({
+        //             id: "relatedcollapse"+index,
+        //             class: "panel-collapse collapse",
+        //             role: "tabpanel",
+        //             'aria-labelledby': "relatedheading"+index
+        //         }).append(
+        //             $('<div>').addClass("panel-body").append('<p>').html(
+        //                 docData[i].summary + "<br/><br/>" +
+        //                 "#" + docData[i].number + "<br/><br/>" +
+        //                 "Committed By " + docData[i].committer + "<br/>" +
+        //                 "Committed on " + docData[i].date + "<br/><br/>"+
+        //                 "Created By " + docData[i].author
+        //                 )
+        //         )
+        //     )
+        // );
+    };
+    console.log(object.position.x+ ", " + object.position.y + ", " + object.position.z);
+    linkObj = new THREE.CSS3DSprite( container );
+    linkObj.position.x = object.position.x + 200;
+    linkObj.position.y = object.position.y;
+    linkObj.position.z = object.position.z;
+    css3dscene.add( linkObj );
 }
 
 function onKeyDown( event ) {
