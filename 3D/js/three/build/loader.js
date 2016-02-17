@@ -82,9 +82,35 @@ function loadFiles(url){
             // Do some action
             console.log(node.attr('id'));
             console.log(building_objects[node.attr('id')]);
-            if(building_objects[node.attr('id')] != null)
+            if(building_objects[node.attr('id')] != null){
                 moveUsingMatrix(building_objects[node.attr('id')], 100, 150);
-        });; 
+                onZoomIn();
+            }
+        }).on('select_node.jstree', function(e, data){
+
+            //event.preventDefault();
+            event.stopImmediatePropagation();
+            //event.stopPropagation();
+            console.log("click node");
+            if(building_objects[data.selected] != null){
+                $("a[href='#collapse_list']").text(building_objects[data.selected].name.split('#')[1]);
+                if(SELECTED){
+                    SELECTED.material.emissive.setHex(SELECTED.currentHex);    
+                }
+                SELECTED = building_objects[data.selected];
+                SELECTED.currentHex = SELECTED.material.emissive.getHex();
+                SELECTED.material.emissive.setHex(onclick_color);
+                showRelatedDocs(true);
+            }
+            else{
+                // showRelatedDocs(false);
+                // $("a[href='#collapse_list']").text("Related Defects");
+                // if(SELECTED){
+                //     SELECTED.material.emissive.setHex(SELECTED.currentHex);
+                // }
+                // SELECTED = null;
+            }
+        }); 
 
 
 	    res = data;
@@ -227,15 +253,17 @@ function loadVersions(){
                 event.stopImmediatePropagation();
             },
             stop: function( event, ui ) {
+                sceneClear();
                 //$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
                 event.stopImmediatePropagation();
                 //console.log("$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ])
                 console.log(options[ui.values[ 0 ]] + " | " + options[ui.values[ 1 ]]);
                 var url = 'http://jsonstub.com/FACTS/codeChangeSample-' + options[ui.values[ 0 ]] + '-' + options[ui.values[ 1 ]];
                 fileData = loadFiles(url);
+                docData = loadDocs();
                 // if(fileData == null)
                 //     console.log(fileData);
-                sceneClear();
+                
                 if(fileData != null){
                     sceneInit();
                 }

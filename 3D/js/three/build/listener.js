@@ -170,9 +170,10 @@ function onDocumentClick( event ) {
                 $("a[href='#collapse_list']").text(SELECTED.name.split('#')[1]);
                 $('#changes').jstree('open_node', SELECTED.name.split('#')[0].split('_')[0]);
                 console.log(SELECTED.name.split('#')[0]);
+                $('#changes').jstree('deselect_all');
                 $('#changes').jstree('select_node', SELECTED.name.split('#')[0]);
                 showRelatedDocs(true);
-
+                showRelatedCode(false);
                 // // to right
                 // var right_line_geometry = new THREE.Geometry();
                 // right_line_geometry .vertices.push(INTERSECTED.position);
@@ -288,30 +289,7 @@ function showRelatedCode(on){
 }
 
 
-$('#changes').on('select_node.jstree', function(e, data){
-
-    //event.preventDefault();
-    event.stopImmediatePropagation();
-    //event.stopPropagation();
-    if(building_objects[data.selected] != null){
-        $("a[href='#collapse_list']").text(building_objects[data.selected].name.split('#')[1]);
-        if(SELECTED){
-            SELECTED.material.emissive.setHex(SELECTED.currentHex);    
-        }
-        SELECTED = building_objects[data.selected];
-        SELECTED.currentHex = SELECTED.material.emissive.getHex();
-        SELECTED.material.emissive.setHex(onclick_color);
-        showRelatedDocs(true);
-    }
-    else{
-        // showRelatedDocs(false);
-        // $("a[href='#collapse_list']").text("Related Defects");
-        // if(SELECTED){
-        //     SELECTED.material.emissive.setHex(SELECTED.currentHex);
-        // }
-        // SELECTED = null;
-    }
-});
+$('#changes')
 
 $(document).on('click', "a[role='button']",function(event){
     //event.preventDefault();
@@ -345,7 +323,7 @@ function onDocumentDblClick(event){
     //console.log(intersects.length);
     if (intersects.length > 0){
         moveUsingMatrix(intersects[0].object);
-        
+        onZoomIn();
         //controls.update();
 
         // solution 2 using quaternion

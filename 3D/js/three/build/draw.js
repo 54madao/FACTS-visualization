@@ -207,6 +207,9 @@ function sceneClear(){
         //console.log(object);
         scene.remove(object);
     });
+    for(var key in sprite_objects){
+                css3dscene.remove(sprite_objects[key]);
+            }
     for(var key in building_objects){
         scene.remove(building_objects[key]);
     }
@@ -217,6 +220,13 @@ function sceneClear(){
     block_objects = [];
     building_objects = [];
     label_objects = [];
+    $('#relatedDocs_list').empty();
+    $('#doc_list').empty();
+    $('#changes').jstree('destroy');
+    $('#version1').empty();
+    $('#version2').empty();
+    $("a[href='#collapse_list']").text("Related Defects");
+    showDetail = false
 }
 
 function createVerticalSlider(){
