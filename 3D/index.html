@@ -199,7 +199,7 @@
             // main()
             var container, stats, tween;
             var camera, controls, scene, renderer, css3dscene, css3drenderer;
-            var building_objects = [], label_objects = [], block_objects = [], base_object, plane, group;
+            var building_objects = [], label_objects = [], block_objects = [], sprite_objects = [], base_object, relatedObj = [], plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
@@ -213,6 +213,7 @@
 
             var onclick_color = 0x00ff00;
             var onhover_color = 0xff00ff;
+            var onlink_color = 0xffff00;
             //pointer line
             var rightline;
             var leftline;

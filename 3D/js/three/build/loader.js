@@ -37,6 +37,7 @@ function loadFiles(url){
 	    // 	);
 	    // }
     	//alert(JSON.stringify(data, null, 4));
+        console.log("s1: " + data.codeChangedPackagesList.length);
     	scale_max = data.maxChangedNumber;
     	scale_min = data.minChangedNumber;
     	$('#left_tab').css({
@@ -104,7 +105,7 @@ function loadDocs(url){
 	var res;
 	$.ajax({
 	    type: 'GET',
-	    url: 'http://jsonstub.com/FACTS/docChangeSample',
+	    url: 'http://jsonstub.com/FACTS/docChangeSample-2.1.0-2.1.10',
 	    contentType: 'application/json',
 	    beforeSend: function (request) {
 	        request.setRequestHeader('JsonStub-User-Key', 'db3469d5-0f9f-4a58-bac5-c343433fa8a4');
@@ -123,6 +124,8 @@ function loadDocs(url){
     		'max-height': (function(){return window.innerHeight - 100}),
     		'width': (function(){return window.innerWidth / 6})
     	});
+
+        console.log('s2: ' + data.length);
     	for (var i = 0; i < data.length; i++) {
     		container.append(
     			$('<div>').addClass("panel panel-default").append(
@@ -151,7 +154,13 @@ function loadDocs(url){
                             "Committed on " + data[i].date + "<br/><br/>"+
                             "Created By " + data[i].author
                             )
-    				)
+    				).on('shown.bs.collapse', function(e){
+                        e.stopImmediatePropagation();
+                        showRelatedCode(true);
+                    }).on('hidden.bs.collapse', function(e){
+                        e.stopImmediatePropagation();
+                        showRelatedCode(false);
+                    })
     			)
     		);
     	};

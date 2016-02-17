@@ -261,6 +261,33 @@ function showRelatedDocs(on){
     
 }
 
+
+function showRelatedCode(on){
+    relatedObj.forEach(function(object){
+        //console.log(object);
+        object.material.emissive.setHex(object.currentHex);
+    });
+    relatedObj = [];
+    if(on){
+        var num = Math.floor(Math.random() * 10) + 1;
+        for (var k = 0; k < num; k++) {
+            var i = Math.floor(Math.random() * 52);
+            var j = Math.floor(Math.random() * 10);
+            var id = i + '_' + j;
+            if(building_objects[id] != null){
+                relatedObj.push(building_objects[id]);
+            }
+         }
+        relatedObj.forEach(function(object){
+            //console.log(object);
+            object.currentHex = object.material.emissive.getHex();
+            object.material.emissive.setHex(onlink_color);
+        });
+    }
+    
+}
+
+
 $('#changes').on('select_node.jstree', function(e, data){
 
     //event.preventDefault();
@@ -289,7 +316,7 @@ $('#changes').on('select_node.jstree', function(e, data){
 $(document).on('click', "a[role='button']",function(event){
     //event.preventDefault();
     var tmp = event.target.tagName;
-    console.log(tmp);
+    //console.log(tmp);
 });
 
 // $('#collapse_list').on('shown.bs.collapse', function () {
@@ -531,6 +558,7 @@ $(document).on('click.jstree', '.jstree-ocl',function(e){
     //showRelatedDocs(true);
 })
 
+
 $(document).on('dblclick', '.labels',function(e){
     //e.preventDefault();
     e.stopImmediatePropagation();
@@ -581,6 +609,9 @@ function onZoomIn(){
                 //console.log(object);
                 scene.add(object);
             });
+            for(var key in sprite_objects){
+                css3dscene.add(sprite_objects[key]);
+            }
             for(var key in building_objects){
                 scene.add(building_objects[key]);
             }
@@ -605,6 +636,9 @@ function onZoomOut(){
                 //console.log(object);
                 scene.remove(object);
             });
+            for(var key in sprite_objects){
+                css3dscene.remove(sprite_objects[key]);
+            }
             for(var key in building_objects){
                 scene.remove(building_objects[key]);
             }

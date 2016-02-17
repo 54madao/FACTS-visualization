@@ -397,6 +397,7 @@ function calculatePositions(data){
         });
 
         block_positions.push({
+            id: i,
             width: width, 
             length: length, 
             x: label_x, 
@@ -517,15 +518,49 @@ function createBlocks(positions,offset){
         var last = tmp.lastIndexOf('.');
         var packageName = tmp.substr(last + 1, tmp.length - 1);
 
-        var spritey = makeTextSprite( packageName, 
-        { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-        // spritey.position.x = block_cube.position.x;
-        // spritey.position.y = 0;
-        // spritey.position.z = block_cube.position.z + block_width / 2;
-        spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
-        //console.log("x: " + block_cube.position.x);
-        //console.log("spritey.x: " + spritey.position.x);
-        group.add( spritey );
+
+        var element = document.createElement( 'div' );
+        element.id = i;
+        element.className = 'labels';
+        element.style.backgroundColor = 'rgba(0,127,127,0.5)';
+        //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
+        element.style.width = positions[i].width + 'px';
+        element.style.height = text_scale + 'px';
+        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+        element.style.border= '1px solid rgba(127,255,255,0.25)';
+        element.style.textAlign = "center";
+
+        var content = document.createElement( 'div' );
+        content.textContent = packageName;
+        content.style.position = 'absolute';
+        //content.style.top = positions[i].width / 2 - fontSize + 'px';
+        //content.style.verticalAlign = 'middle';
+        content.style.left = '0px';
+        content.style.right = '0px';
+        content.style.fontSize = 12 + 'px';
+        content.style.fontWeight = 'bold';
+        content.style.color = 'rgba(0,0,0,0.75)';
+        content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+        content.style.wordWrap = "break-word";
+        element.appendChild( content );
+
+        var object = new THREE.CSS3DSprite( element );
+        object.position.x =  block_cube.position.x;
+        object.position.y = 0;
+        object.position.z = block_cube.position.z + block_width / 2 + text_scale / 2;
+        //object.rotation.x = - Math.PI / 2;
+        //css3dscene.add( object );
+        sprite_objects[positions[i].id] = object;
+
+        // var spritey = makeTextSprite( packageName, 
+        // { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
+        // // spritey.position.x = block_cube.position.x;
+        // // spritey.position.y = 0;
+        // // spritey.position.z = block_cube.position.z + block_width / 2;
+        // spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
+        // //console.log("x: " + block_cube.position.x);
+        // //console.log("spritey.x: " + spritey.position.x);
+        // group.add( spritey );
 
         block_objects.push(group);
 
