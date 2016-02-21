@@ -689,6 +689,33 @@ function createBuildings(positions,offset){
         var methods = [];
         var container = document.createElement( 'div' );
         container.className = 'methods';
+        var element = document.createElement( 'div' );
+        element.style.backgroundColor = 'rgba(200,200,200,1)';
+        //element.style.backgroundBlendMode = 'normal';
+        //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
+        element.style.width = '150px';
+        element.style.height = element_height * 2 + 'px';
+        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+        element.style.border= '1px solid rgba(127,255,255,0.25)';
+        element.style.textAlign = "center";
+
+
+        var content = document.createElement( 'div' );
+        content.textContent = positions[i].name + " (" + positions[i].originalHeight +" LOC)";
+        content.style.position = 'absolute';
+        //content.style.top = positions[i].width / 2 - fontSize + 'px';
+        //content.style.verticalAlign = 'middle';
+        content.style.left = '0px';
+        content.style.right = '0px';
+        content.style.fontSize = 15 + 'px';
+        content.style.fontWeight = 'bold';
+        content.style.color = 'rgba(0,0,0,0.75)';
+        content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+        content.style.wordWrap = "break-word";
+        element.appendChild( content );
+
+        container.appendChild(element);
+
         for(var item of positions[i].methods){
             for(var method of item.children){
                 var element = document.createElement( 'div' );
@@ -709,7 +736,7 @@ function createBuildings(positions,offset){
                 }
                 //element.style.backgroundBlendMode = 'normal';
                 //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
-                element.style.width = '250px';
+                element.style.width = '150px';
                 element.style.height = element_height + 'px';
                 element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
                 element.style.border= '1px solid rgba(127,255,255,0.25)';

@@ -191,7 +191,8 @@ function loadDocs(url){
 	var res;
 	$.ajax({
 	    type: 'GET',
-	    url: 'http://jsonstub.com/FACTS/docChangeSample-2.1.0-2.1.10',
+	    //url: 'http://jsonstub.com/FACTS/docChangeSample-2.1.0-2.1.10',
+        url: url,
 	    contentType: 'application/json',
 	    beforeSend: function (request) {
 	        request.setRequestHeader('JsonStub-User-Key', 'db3469d5-0f9f-4a58-bac5-c343433fa8a4');
@@ -220,7 +221,7 @@ function loadDocs(url){
     						$('<a>').attr({
     							role: "button",
     							'data-toggle': "collapse",
-    							//'data-parent': "#doc_list",
+    							'data-parent': "#doc_list",
     							href: "#collapse"+i,
     							'aria-expanded': "false",
     							'aria-controls': "collapse"+i
@@ -233,16 +234,27 @@ function loadDocs(url){
     					role: "tabpanel",
     					'aria-labelledby': "heading"+i
     				}).append(
-    					$('<div>').addClass("panel-body").append('<p>').html(
-                            data[i].summary + "<br/><br/>" +
-                            "#" + data[i].number + "<br/><br/>" +
-                            "Committed By " + data[i].committer + "<br/>" +
-                            "Committed on " + data[i].date + "<br/><br/>"+
-                            "Created By " + data[i].author
+    					$('<div>').addClass("panel-body").append(
+                            $('<p>').html(
+                                data[i].summary + "<br/><br/>" +
+                                "#" + data[i].number + "<br/><br/>" +
+                                "Committed By " + data[i].committer + "<br/>" +
+                                "Committed on " + data[i].date + "<br/><br/>"+
+                                "Created By " + data[i].author + "<br/><br/>" +
+                                "<a href='" + data[i].link + "' target='_blank'>Link</a>" + "<br/>"
+                            ).append(
+                                $('<a>').attr({
+                                    href: '#'
+                                }).text("show related files").on('click', function(){
+                                    showRelatedCode(true);
+                                })
                             )
+                        )
     				).on('shown.bs.collapse', function(e){
                         e.stopImmediatePropagation();
-                        showRelatedCode(true);
+                        //showRelatedCode(true);
+                        $('#left_tab a[href="#docs"]').tab('show');
+
                     }).on('hidden.bs.collapse', function(e){
                         e.stopImmediatePropagation();
                         showRelatedCode(false);
@@ -320,7 +332,8 @@ function loadVersions(){
                 console.log(options[ui.values[ 0 ]] + " | " + options[ui.values[ 1 ]]);
                 var url = 'http://jsonstub.com/FACTS/codeChangeSample-' + options[ui.values[ 0 ]] + '-' + options[ui.values[ 1 ]];
                 fileData = loadFiles(url);
-                docData = loadDocs();
+                url = 'http://jsonstub.com/FACTS/docChangeSample-' + options[ui.values[ 0 ]] + '-' + options[ui.values[ 1 ]];
+                docData = loadDocs(url);
                 // if(fileData == null)
                 //     console.log(fileData);
                 
