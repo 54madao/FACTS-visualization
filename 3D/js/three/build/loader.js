@@ -144,6 +144,12 @@ function loadFiles(url){
             if(building_objects[node.attr('id')] != null){
                 moveUsingMatrix(building_objects[node.attr('id')], 200, 250);
                 onZoomIn();
+                showRelation(building_objects[node.attr('id')]);
+                if(linkCodeObj!=null){
+                    css3dscene.remove( linkCodeObj );
+                }
+                linkCodeObj = method_objects[node.attr('id')];
+                css3dscene.add( linkCodeObj );
             }
         }).on('select_node.jstree', function(e, data){
 
@@ -154,13 +160,22 @@ function loadFiles(url){
             if(building_objects[data.selected] != null){
                 $("a[href='#collapse_list']").text(building_objects[data.selected].name.split('#')[1]);
                 if(SELECTED){
-                    SELECTED.material.emissive.setHex(SELECTED.currentHex);    
+                    SELECTED.material.emissive.setHex(SELECTED.currentHex);
+                    if(linkCodeObj!=null){
+                        css3dscene.remove( linkCodeObj );
+                    }
+                    if(linkDocObj!=null){
+                        css3dscene.remove( linkDocObj );
+                    }
+                    linkCodeObj = null;
+                    linkDocObj = null;     
                 }
                 SELECTED = building_objects[data.selected];
                 SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 SELECTED.material.emissive.setHex(onclick_color);
-                showRelatedDocs(true);
-                showRelation(SELECTED);
+                //showRelatedDocs(true);
+                // showRelation(SELECTED);
+                showRelatedCode(false);
             }
             else{
                 // showRelatedDocs(false);
@@ -247,6 +262,14 @@ function loadDocs(url){
                                     href: '#'
                                 }).text("show related files").on('click', function(){
                                     showRelatedCode(true);
+                                    if(linkCodeObj!=null){
+                                        css3dscene.remove( linkCodeObj );
+                                    }
+                                    if(linkDocObj!=null){
+                                        css3dscene.remove( linkDocObj );
+                                    }
+                                    linkCodeObj = null;
+                                    linkDocObj = null;
                                 })
                             )
                         )
@@ -344,7 +367,8 @@ function loadVersions(){
             }
         }).slider("pips", {
             rest: "label",
-            labels: options
+            labels: options,
+            step: 10,
         })                 
         .slider("float", {
             labels: options

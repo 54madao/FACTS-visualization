@@ -208,25 +208,38 @@ function sceneClear(){
         scene.remove(object);
     });
     for(var key in sprite_objects){
-                css3dscene.remove(sprite_objects[key]);
-            }
+        css3dscene.remove(sprite_objects[key]);
+    }
     for(var key in building_objects){
         scene.remove(building_objects[key]);
     }
     for(var key in label_objects){
         css3dscene.remove(label_objects[key]);
     }
+    if(linkCodeObj!=null){
+        css3dscene.remove( linkCodeObj );
+    }
+    if(linkDocObj!=null){
+        css3dscene.remove( linkDocObj );
+    }
     scene.remove(base_object);
+
     block_objects = [];
     building_objects = [];
     label_objects = [];
+    sprite_objects = [];
+    linkCodeObj = null;
+    linkDocObj = null;
+    
     $('#relatedDocs_list').empty();
     $('#doc_list').empty();
     $('#changes').jstree('destroy');
     $('#version1').empty();
     $('#version2').empty();
     $("a[href='#collapse_list']").text("Related Defects");
-    showDetail = false
+
+     
+    showDetail = false;
 }
 
 function createVerticalSlider(){
@@ -541,6 +554,9 @@ function createLabels(positions, offset){
         content.style.color = 'rgba(0,0,0,0.75)';
         content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
         content.style.wordWrap = "break-word";
+        // content.style.overflow = 'hidden';
+        // content.style.textOverflow = "ellipsis";
+        // content.style.whiteSpace = "nowrap";
         element.appendChild( content );
 
         var object = new THREE.CSS3DObject( element );
@@ -689,15 +705,20 @@ function createBuildings(positions,offset){
         var methods = [];
         var container = document.createElement( 'div' );
         container.className = 'methods';
+
+
         var element = document.createElement( 'div' );
         element.style.backgroundColor = 'rgba(200,200,200,1)';
         //element.style.backgroundBlendMode = 'normal';
         //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
         element.style.width = '150px';
-        element.style.height = element_height * 2 + 'px';
+        element.style.height = element_height + 'px';
         element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
         element.style.border= '1px solid rgba(127,255,255,0.25)';
         element.style.textAlign = "center";
+        element.style.overflow = 'hidden';
+        element.style.textOverflow = "ellipsis";
+        element.style.whiteSpace = "nowrap";
 
 
         var content = document.createElement( 'div' );
@@ -707,11 +728,15 @@ function createBuildings(positions,offset){
         //content.style.verticalAlign = 'middle';
         content.style.left = '0px';
         content.style.right = '0px';
-        content.style.fontSize = 15 + 'px';
+        content.style.fontSize = 20 + 'px';
         content.style.fontWeight = 'bold';
         content.style.color = 'rgba(0,0,0,0.75)';
         content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
-        content.style.wordWrap = "break-word";
+        content.style.overflow = 'hidden';
+        content.style.textOverflow = "ellipsis";
+        content.style.whiteSpace = "nowrap";
+        //content.style.wordWrap = "break-word";
+        //content.style.textOverflow = 'ellipsis';
         element.appendChild( content );
 
         container.appendChild(element);
@@ -754,7 +779,11 @@ function createBuildings(positions,offset){
                 content.style.fontWeight = 'bold';
                 content.style.color = 'rgba(0,0,0,0.75)';
                 content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
-                content.style.wordWrap = "break-word";
+                content.style.overflow = 'hidden';
+                content.style.textOverflow = "ellipsis";
+                content.style.whiteSpace = "nowrap";
+                //content.style.wordWrap = "break-word";
+                //content.style.textOverflow = "clip";
                 element.appendChild( content );
 
                 container.appendChild(element);
@@ -771,7 +800,7 @@ function createBuildings(positions,offset){
             }
         }
         var object = new THREE.CSS3DSprite( container );
-        object.position.x = build_cube.position.x - 200;
+        object.position.x = build_cube.position.x - 150;
         object.position.y = build_cube.position.y;
         object.position.z = build_cube.position.z;
         method_objects[positions[i].id] = object;
