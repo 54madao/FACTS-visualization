@@ -66,7 +66,65 @@ function loadFiles(url){
  				    				results.push({
  				    					id: i + '_' + j,
  				    					text: data.codeChangedPackagesList[i].codeChangedFileList[j].codePathName.match(/[^\\/]+\.[^\\/]+$/)[0],
- 				    					icon: 'jstree-file'
+ 				    					icon: 'jstree-file',
+                                        children: (function(i, j){
+                                            var results = [];
+                                            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('AddedMethods')){
+                                                results.push({
+                                                    id: i + '_' + j + '_A',
+                                                    text: 'AddedMethods',
+                                                    icon: 'glyphicon-leaf',
+                                                    children: (function(i, j){
+                                                        var results = [];
+                                                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].AddedMethods.length; k++){
+                                                            results.push({
+                                                                id: i + '_' + j + '_A' + k,
+                                                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].AddedMethods[k].methodName,
+                                                                icon: 'glyphicon-leaf'
+                                                            });
+                                                        }
+                                                        return results;
+                                                    })(i, j)
+                                                });
+                                            }
+                                            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('DeletedMethods')){
+                                                results.push({
+                                                    id: i + '_' + j + '_D',
+                                                    text: 'DeletedMethods',
+                                                    icon: 'glyphicon-leaf',
+                                                    children: (function(i, j){
+                                                        var results = [];
+                                                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].DeletedMethods.length; k++){
+                                                            results.push({
+                                                                id: i + '_' + j + '_D' + k,
+                                                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].DeletedMethods[k].methodName,
+                                                                icon: 'glyphicon-leaf'
+                                                            });
+                                                        }
+                                                        return results;
+                                                    })(i, j)
+                                                });
+                                            }
+                                            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('ModifiedMethods')){
+                                                results.push({
+                                                    id: i + '_' + j + '_M',
+                                                    text: 'ModifiedMethods',
+                                                    icon: 'glyphicon-leaf',
+                                                    children: (function(i, j){
+                                                        var results = [];
+                                                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].ModifiedMethods.length; k++){
+                                                            results.push({
+                                                                id: i + '_' + j + '_M' + k,
+                                                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].ModifiedMethods[k].methodName,
+                                                                icon: 'glyphicon-leaf'
+                                                            });
+                                                        }
+                                                        return results;
+                                                    })(i, j)
+                                                });
+                                            }
+                                            return results;
+                                        })(i, j)
  				    				});
  				    			}
  				    			return results;
@@ -77,13 +135,14 @@ function loadFiles(url){
     			})()
     		}
     	}).bind("dblclick.jstree", function (e, data) {
+            e.stopImmediatePropagation();
             var node = $(event.target).closest("li");
             //var data = node.data("id");
             // Do some action
             console.log(node.attr('id'));
             console.log(building_objects[node.attr('id')]);
             if(building_objects[node.attr('id')] != null){
-                moveUsingMatrix(building_objects[node.attr('id')], 100, 150);
+                moveUsingMatrix(building_objects[node.attr('id')], 200, 250);
                 onZoomIn();
             }
         }).on('select_node.jstree', function(e, data){
@@ -101,7 +160,7 @@ function loadFiles(url){
                 SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 SELECTED.material.emissive.setHex(onclick_color);
                 showRelatedDocs(true);
-                //showRelation(SELECTED);
+                showRelation(SELECTED);
             }
             else{
                 // showRelatedDocs(false);

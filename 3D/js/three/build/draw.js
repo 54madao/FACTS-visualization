@@ -379,6 +379,56 @@ function calculatePositions(data){
             sum += build_height;
             build_height = (build_height - scale_min) / (scale_max - scale_min) * scale_size;
 
+            var methods = [];
+            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('AddedMethods')){
+                methods.push({
+                    id: i + '_' + j + '_A',
+                    text: 'AddedMethods',
+                    children: (function(i, j){
+                        var results = [];
+                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].AddedMethods.length; k++){
+                            results.push({
+                                id: i + '_' + j + '_A' + k,
+                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].AddedMethods[k].methodName
+                            });
+                        }
+                        return results;
+                    })(i, j)
+                });
+            }
+            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('DeletedMethods')){
+                methods.push({
+                    id: i + '_' + j + '_D',
+                    text: 'DeletedMethods',
+                    children: (function(i, j){
+                        var results = [];
+                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].DeletedMethods.length; k++){
+                            results.push({
+                                id: i + '_' + j + '_D' + k,
+                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].DeletedMethods[k].methodName
+                            });
+                        }
+                        return results;
+                    })(i, j)
+                });
+            }
+            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('ModifiedMethods')){
+                methods.push({
+                    id: i + '_' + j + '_M',
+                    text: 'ModifiedMethods',
+                    children: (function(i, j){
+                        var results = [];
+                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].ModifiedMethods.length; k++){
+                            results.push({
+                                id: i + '_' + j + '_M' + k,
+                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].ModifiedMethods[k].methodName
+                            });
+                        }
+                        return results;
+                    })(i, j)
+                });
+            }
+
 
             building_postitions.push({
                 x: building_postition_x, 
@@ -386,7 +436,8 @@ function calculatePositions(data){
                 height: build_height,
                 originalHeight: data.codeChangedPackagesList[i].codeChangedFileList[j].changedNumberLinesCode,
                 id: i + "_" + j,
-                name: data.codeChangedPackagesList[i].codeChangedFileList[j].codePathName.match(/[^\\/]+\.[^\\/]+$/)[0]
+                name: data.codeChangedPackagesList[i].codeChangedFileList[j].codePathName.match(/[^\\/]+\.[^\\/]+$/)[0],
+                methods: methods
             });
             
             if( (j + 1) % numColsBuildings == 0){
@@ -459,7 +510,7 @@ function createLabels(positions, offset){
             green = Math.round(255 - (positions[i].total - 100) / 500 * 255);
         }
 
-        console.log("p: " + positions[i].total + ', r: '+ red + ', g: ' + green);
+        //console.log("p: " + positions[i].total + ', r: '+ red + ', g: ' + green);
         //Text
         var tmp = fileData.codeChangedPackagesList[i].packageName;
         tmp = tmp.replace(/\\/g, ".").substr(1, tmp.length - 2);
@@ -530,50 +581,50 @@ function createBlocks(positions,offset){
         var packageName = tmp.substr(last + 1, tmp.length - 1);
 
 
-        var element = document.createElement( 'div' );
-        element.id = i;
-        element.className = 'labels';
-        element.style.backgroundColor = 'rgba(0,127,127,0.5)';
-        //element.style.backgroundBlendMode = 'normal';
-        //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
-        element.style.width = positions[i].width + 'px';
-        element.style.height = text_scale + 'px';
-        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
-        element.style.border= '1px solid rgba(127,255,255,0.25)';
-        element.style.textAlign = "center";
-        //element.style.zIndex = 0;
+        // var element = document.createElement( 'div' );
+        // element.id = i;
+        // element.className = 'labels';
+        // element.style.backgroundColor = 'rgba(0,127,127,0.5)';
+        // //element.style.backgroundBlendMode = 'normal';
+        // //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
+        // element.style.width = positions[i].width + 'px';
+        // element.style.height = text_scale + 'px';
+        // element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+        // element.style.border= '1px solid rgba(127,255,255,0.25)';
+        // element.style.textAlign = "center";
+        // //element.style.zIndex = 0;
 
-        var content = document.createElement( 'div' );
-        content.textContent = packageName;
-        content.style.position = 'absolute';
-        //content.style.top = positions[i].width / 2 - fontSize + 'px';
-        //content.style.verticalAlign = 'middle';
-        content.style.left = '0px';
-        content.style.right = '0px';
-        content.style.fontSize = 12 + 'px';
-        content.style.fontWeight = 'bold';
-        content.style.color = 'rgba(0,0,0,0.75)';
-        content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
-        content.style.wordWrap = "break-word";
-        element.appendChild( content );
+        // var content = document.createElement( 'div' );
+        // content.textContent = packageName;
+        // content.style.position = 'absolute';
+        // //content.style.top = positions[i].width / 2 - fontSize + 'px';
+        // //content.style.verticalAlign = 'middle';
+        // content.style.left = '0px';
+        // content.style.right = '0px';
+        // content.style.fontSize = 12 + 'px';
+        // content.style.fontWeight = 'bold';
+        // content.style.color = 'rgba(0,0,0,0.75)';
+        // content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+        // content.style.wordWrap = "break-word";
+        // element.appendChild( content );
 
-        var object = new THREE.CSS3DSprite( element );
-        object.position.x =  block_cube.position.x;
-        object.position.y = 0;
-        object.position.z = block_cube.position.z + block_width / 2 + text_scale / 2;
-        //object.rotation.x = - Math.PI / 2;
-        //css3dscene.add( object );
-        sprite_objects[positions[i].id] = object;
+        // var object = new THREE.CSS3DSprite( element );
+        // object.position.x =  block_cube.position.x;
+        // object.position.y = 0;
+        // object.position.z = block_cube.position.z + block_width / 2 + text_scale / 2;
+        // //object.rotation.x = - Math.PI / 2;
+        // //css3dscene.add( object );
+        // sprite_objects[positions[i].id] = object;
 
-        // var spritey = makeTextSprite( packageName, 
-        // { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-        // // spritey.position.x = block_cube.position.x;
-        // // spritey.position.y = 0;
-        // // spritey.position.z = block_cube.position.z + block_width / 2;
-        // spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
-        // //console.log("x: " + block_cube.position.x);
-        // //console.log("spritey.x: " + spritey.position.x);
-        // group.add( spritey );
+        var spritey = makeTextSprite( packageName, 
+        { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
+        // spritey.position.x = block_cube.position.x;
+        // spritey.position.y = 0;
+        // spritey.position.z = block_cube.position.z + block_width / 2;
+        spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
+        //console.log("x: " + block_cube.position.x);
+        //console.log("spritey.x: " + spritey.position.x);
+        group.add( spritey );
 
         block_objects.push(group);
 
@@ -619,7 +670,8 @@ function createBlocks(positions,offset){
 
 function createBuildings(positions,offset){
     //console.log(positions.length);
-    for(var i = 0; i < positions.length; i++){       
+    for(var i = 0; i < positions.length; i++){
+        //console.log(positions[i]);       
         var build = new THREE.BoxGeometry( building_scale, positions[i].height, building_scale);
         var build_material = new THREE.MeshLambertMaterial( { color: 0xff0000, overdraw: 0.5, transparent: true, opacity: 1 } );
         var build_cube = new THREE.Mesh( build, build_material  );
@@ -630,6 +682,72 @@ function createBuildings(positions,offset){
         build_cube.name = positions[i].id + "#" + positions[i].name + " (" + positions[i].originalHeight +" LOC)";
         //scene.add( build_cube );
         building_objects[positions[i].id] = build_cube;
+
+
+        //var start_y = 0;
+        var element_height = 30;
+        var methods = [];
+        var container = document.createElement( 'div' );
+        container.className = 'methods';
+        for(var item of positions[i].methods){
+            for(var method of item.children){
+                var element = document.createElement( 'div' );
+                element.id = 'R_' + method.id;
+                
+                
+                if(item.text == 'AddedMethods'){
+                    element.style.backgroundColor = 'rgba(0,255,0,0.5)';
+                    element.className = 'AddedMethods';
+                }
+                if(item.text == 'DeletedMethods'){
+                    element.style.backgroundColor = 'rgba(255,0,0,0.5)';
+                    element.className = 'DeletedMethods';
+                }
+                if(item.text == 'ModifiedMethods'){
+                    element.style.backgroundColor = 'rgba(255,255,0,0.5)';
+                    element.className = 'ModifiedMethods';
+                }
+                //element.style.backgroundBlendMode = 'normal';
+                //element.style.backgroundColor = 'rgba(0,100.10,0,0.5)';
+                element.style.width = '250px';
+                element.style.height = element_height + 'px';
+                element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+                element.style.border= '1px solid rgba(127,255,255,0.25)';
+                element.style.textAlign = "center";
+
+
+                var content = document.createElement( 'div' );
+                content.textContent = method.text;
+                content.style.position = 'absolute';
+                //content.style.top = positions[i].width / 2 - fontSize + 'px';
+                //content.style.verticalAlign = 'middle';
+                content.style.left = '0px';
+                content.style.right = '0px';
+                content.style.fontSize = 20 + 'px';
+                content.style.fontWeight = 'bold';
+                content.style.color = 'rgba(0,0,0,0.75)';
+                content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+                content.style.wordWrap = "break-word";
+                element.appendChild( content );
+
+                container.appendChild(element);
+
+                // var object = new THREE.CSS3DSprite( element );
+                // object.position.x = build_cube.position.x - 400;
+                // object.position.y = start_y;
+                // object.position.z = build_cube.position.z;
+                // //object.rotation.x = - Math.PI / 2;
+                // start_y += element_height;
+                // //css3dscene.add( object );
+                // methods.push(object);
+                
+            }
+        }
+        var object = new THREE.CSS3DSprite( container );
+        object.position.x = build_cube.position.x - 200;
+        object.position.y = build_cube.position.y;
+        object.position.z = build_cube.position.z;
+        method_objects[positions[i].id] = object;
     }
 }
 

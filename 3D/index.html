@@ -199,7 +199,7 @@
             // main()
             var container, stats, tween;
             var camera, controls, scene, renderer, css3dscene, css3drenderer;
-            var building_objects = [], label_objects = [], block_objects = [], sprite_objects = [], base_object, relatedObj = [], plane, group;
+            var building_objects = [], label_objects = [], block_objects = [], sprite_objects = [], method_objects = [], base_object, relatedObj = [], linkObj, plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
@@ -324,7 +324,7 @@
                 renderer.domElement.style.zIndex = 1;
                 //renderer.domElement.style.backgroundColor="#00FF00";
                 //document.body.appendChild(renderer.domElement);
-                
+
                 //css3drenderer
                 css3drenderer = new THREE.CSS3DRenderer();
                 css3drenderer.setSize( window.innerWidth, window.innerHeight );

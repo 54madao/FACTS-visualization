@@ -172,6 +172,12 @@ function onDocumentClick( event ) {
                 console.log(SELECTED.name.split('#')[0]);
                 $('#changes').jstree('deselect_all');
                 $('#changes').jstree('select_node', SELECTED.name.split('#')[0]);
+                var uid = SELECTED.name.split('#')[0];
+                $('#changes').scrollTop($('#'+uid).position().top);
+                // method_objects[uid].forEach(function(object){
+                //     css3dscene.add( object );
+                // });
+                css3dscene.add( method_objects[uid] );
                 showRelatedDocs(true);
                 showRelatedCode(false);
                 // // to right
@@ -321,8 +327,9 @@ function onDocumentDblClick(event){
     var intersects = raycaster.intersectObjects( scene.children ), material;
     //console.log(intersects.length);
     if (intersects.length > 0){
-        moveUsingMatrix(intersects[0].object);
+        moveUsingMatrix(intersects[0].object, 200, 250);
         onZoomIn();
+
         //controls.update();
 
         // solution 2 using quaternion
@@ -466,7 +473,7 @@ function showRelation(object){
     var container = document.createElement( 'div' );
     //container.style.maxHeight = (function(){return window.innerHeight - 100});
     //container.style.width = (function(){return window.innerWidth / 5})
-    container.style.width = '300px'
+    container.style.width = '250px'
     container.style.borderStyle = 'groove';
     container.style.overflow = 'auto';
     // var container = $('<div>').css({
