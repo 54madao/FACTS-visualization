@@ -131,7 +131,7 @@
             </div>
         </div>
 
-        <div class="list_right">
+        <!--<div class="list_right">
             
             <div class="panel panel-default" id="right_tab">
                 
@@ -149,7 +149,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
         
         <div id="info"><span id="version1"></span><span> | </span><span id="version2"></span>
             <div id="circles-slider"></div>
@@ -199,7 +199,7 @@
             // main()
             var container, stats, tween;
             var camera, controls, scene, renderer, css3dscene, css3drenderer;
-            var building_objects = [], label_objects = [], block_objects = [], sprite_objects = [], base_object, relatedObj = [], plane, group;
+            var building_objects = [], label_objects = [], block_objects = [], sprite_objects = [], method_objects = [], base_object, relatedObj = [], linkDocObj, linkCodeObj, plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
@@ -311,7 +311,7 @@
 
                 //create renderer
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
-                renderer.setClearColor(0xffffff, 1);
+                renderer.setClearColor(0xf0f0f0, 1);
                 renderer.setPixelRatio( window.devicePixelRatio );
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 //renderer.setSize( CONTAINER_WIDTH, window.innerHeight );
@@ -324,7 +324,7 @@
                 renderer.domElement.style.zIndex = 1;
                 //renderer.domElement.style.backgroundColor="#00FF00";
                 //document.body.appendChild(renderer.domElement);
-                
+
                 //css3drenderer
                 css3drenderer = new THREE.CSS3DRenderer();
                 css3drenderer.setSize( window.innerWidth, window.innerHeight );

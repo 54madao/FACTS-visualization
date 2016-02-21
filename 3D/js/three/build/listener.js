@@ -160,6 +160,14 @@ function onDocumentClick( event ) {
                     //scene.remove(rightline);
                     //scene.remove(leftline);
                 }
+                if(linkCodeObj!=null){
+                    css3dscene.remove( linkCodeObj );
+                }
+                if(linkDocObj!=null){
+                    css3dscene.remove( linkDocObj );
+                }
+                linkCodeObj = null;
+                linkDocObj = null;
             }   
             SELECTED = intersects[0].object;
             material = SELECTED.material;
@@ -172,7 +180,13 @@ function onDocumentClick( event ) {
                 console.log(SELECTED.name.split('#')[0]);
                 $('#changes').jstree('deselect_all');
                 $('#changes').jstree('select_node', SELECTED.name.split('#')[0]);
-                showRelatedDocs(true);
+                var uid = SELECTED.name.split('#')[0];
+                $('#changes').scrollTop($('#'+uid).position().top);
+                // method_objects[uid].forEach(function(object){
+                //     css3dscene.add( object );
+                // });
+                //css3dscene.add( method_objects[uid] );
+                //showRelatedDocs(true);
                 showRelatedCode(false);
                 // // to right
                 // var right_line_geometry = new THREE.Geometry();
@@ -271,12 +285,13 @@ function showRelatedCode(on){
     relatedObj = [];
     if(on){
         var num = Math.floor(Math.random() * 10) + 1;
-        for (var k = 0; k < num; k++) {
+        for (var k = 0; k < num; ) {
             var i = Math.floor(Math.random() * 52);
             var j = Math.floor(Math.random() * 10);
             var id = i + '_' + j;
             if(building_objects[id] != null){
                 relatedObj.push(building_objects[id]);
+                k++;
             }
          }
         relatedObj.forEach(function(object){
@@ -284,8 +299,16 @@ function showRelatedCode(on){
             object.currentHex = object.material.emissive.getHex();
             object.material.emissive.setHex(onlink_color);
         });
+        if (SELECTED){
+            material = SELECTED.material;
+            if(material.emissive){
+                material.emissive.setHex(SELECTED.currentHex);
+                //scene.remove(rightline);
+                //scene.remove(leftline);
+            }
+            SELECTED = null;
+        }  
     }
-    
 }
 
 
@@ -321,8 +344,15 @@ function onDocumentDblClick(event){
     var intersects = raycaster.intersectObjects( scene.children ), material;
     //console.log(intersects.length);
     if (intersects.length > 0){
-        moveUsingMatrix(intersects[0].object);
+        moveUsingMatrix(intersects[0].object, 200, 250);
         onZoomIn();
+        var uid = intersects[0].object.name.split('#')[0];
+        showRelation(building_objects[uid]);
+        if(linkCodeObj!=null){
+            css3dscene.remove( linkCodeObj );
+        }
+        linkCodeObj = method_objects[uid];
+        css3dscene.add( linkCodeObj );
         //controls.update();
 
         // solution 2 using quaternion
@@ -364,9 +394,19 @@ function onDocumentDblClick(event){
                 // scene.remove(rightline);
                 // scene.remove(leftline);
             }
+            if(linkCodeObj!=null){
+                css3dscene.remove( linkCodeObj );
+            }
+            if(linkDocObj!=null){
+                css3dscene.remove( linkDocObj );
+            }
+            linkCodeObj = null;
+            linkDocObj = null;
+
         }
-        showRelatedDocs(false);
-        $("a[href='#collapse_list']").text("Related Defects");
+        showRelatedCode(false);
+        //showRelatedDocs(false);
+        //$("a[href='#collapse_list']").text("Related Defects");
         SELECTED = null;
     }
     // if (intersects.length > 0) {
@@ -466,9 +506,60 @@ function showRelation(object){
     var container = document.createElement( 'div' );
     //container.style.maxHeight = (function(){return window.innerHeight - 100});
     //container.style.width = (function(){return window.innerWidth / 5})
-    container.style.width = '300px'
+    container.style.width = '150px';
+    //container.style.height = '30px';
     container.style.borderStyle = 'groove';
-    container.style.overflow = 'auto';
+    //container.style.overflow = 'hidden';
+
+    var element = document.createElement( 'div' );
+        element.style.height = '20px';
+        element.style.backgroundColor = 'rgba(200,200,200,1)';
+        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+        element.style.border= '1px solid rgba(127,255,255,0.25)';
+        element.style.textAlign = "center";
+        element.style.overflow = 'hidden';
+        element.style.textOverflow = "ellipsis";
+        element.style.whiteSpace = "nowrap";
+        //element.className = "panel panel-default";
+
+        var content = document.createElement( 'div' );
+        content.textContent = 'Defects';
+        content.style.fontSize = 15 + 'px';
+        content.style.fontWeight = 'bold';
+        content.style.color = 'rgba(0,0,0,0.75)';
+        content.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+
+        element.appendChild(content);
+        container.appendChild(element);
+
+
+    var num = Math.floor(Math.random() * 5) + 1;   
+    for (var i = 0; i < num; i++) {
+
+        var element = document.createElement( 'div' );
+        element.style.height = '20px';
+        element.style.backgroundColor = 'rgba(200,200,200,1)';
+        element.style.boxShadow = '0px 0px 12px rgba(0,255,255,0.5)';
+        element.style.border= '1px solid rgba(127,255,255,0.25)';
+        element.style.textAlign = "center";
+        element.style.overflow = 'hidden';
+        element.style.textOverflow = "ellipsis";
+        element.style.whiteSpace = "nowrap";
+        //element.className = "panel panel-default";
+
+        var index = Math.floor(Math.random() * 6);
+        var content = document.createElement( 'a' );
+        content.setAttribute('role', "button");
+        content.href = "#collapse"+index;
+        content.setAttribute('data-toggle', "collapse");
+        content.setAttribute('aria-expanded', "false");
+        content.setAttribute('aria-controls', "linkedcollapse"+index);
+        content.setAttribute('data-parent',"#doc_list");
+        content.textContent = docData[index].key;
+
+        element.appendChild(content);
+        container.appendChild(element);
+    }
     // var container = $('<div>').css({
     //         'max-height': (function(){return window.innerHeight - 100}),
     //         'width': (function(){return window.innerWidth / 5}),
@@ -476,113 +567,116 @@ function showRelation(object){
     //         "border-bottom-style": 'groove',
     //         'overflow': 'auto'
     //     });
-    var header = document.createElement( 'div' );
-    header.className = "nav nav-tabs nav-justified";
-    header.textContent = object.name.split('#')[1];
-    header.setAttribute('role', "tablist");
-    //header.style.position = 'absolute';
-    //header.style.fontSize = 12 + 'px';
-    //header.style.fontWeight = 'bold';
-    //header.style.color = 'rgba(0,0,0,0.75)';
-    //header.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
-    container.appendChild(header);
+    // var header = document.createElement( 'div' );
+    // header.className = "nav nav-tabs nav-justified";
+    // header.textContent = object.name.split('#')[1];
+    // header.setAttribute('role', "tablist");
+    // //header.style.position = 'absolute';
+    // //header.style.fontSize = 12 + 'px';
+    // //header.style.fontWeight = 'bold';
+    // //header.style.color = 'rgba(0,0,0,0.75)';
+    // //header.style.textShadow = '0 0 10px rgba(0,255,255,0.95)';
+    // container.appendChild(header);
 
-    var list = document.createElement( 'div' );
-    list.className = "panel-group";
-    list.id = "accordion";
-    list.setAttribute('role', "tablist");
-    list.setAttribute('aria-multiselectable', 'true');
-    container.appendChild(list);
+    // var list = document.createElement( 'div' );
+    // list.className = "panel-group";
+    // list.id = "accordion";
+    // list.setAttribute('role', "tablist");
+    // list.setAttribute('aria-multiselectable', 'true');
+    // container.appendChild(list);
 
-    var num = Math.floor(Math.random() * 5) + 1;   
-    for (var i = 0; i < num; i++) {
-        var index = Math.floor(Math.random() * 6);
+    // var num = Math.floor(Math.random() * 5) + 1;   
+    // for (var i = 0; i < num; i++) {
+    //     var index = Math.floor(Math.random() * 6);
         
-        var l1 = document.createElement( 'div' );
-        l1.className = "panel panel-default";
-        list.appendChild(l1);
+    //     var l1 = document.createElement( 'div' );
+    //     l1.className = "panel panel-default";
+    //     list.appendChild(l1);
 
-        var l21 = document.createElement( 'div' );
-        l21.className = "panel-heading";
-        l21.setAttribute('role', "tab");
-        l21.id = "relatedheading"+index;
-        l1.appendChild(l21);
+    //     var l21 = document.createElement( 'div' );
+    //     l21.className = "panel-heading";
+    //     l21.setAttribute('role', "tab");
+    //     l21.id = "relatedheading"+index;
+    //     l1.appendChild(l21);
 
-        var l31 = document.createElement( 'h4' );
-        l31.className = "panel-title";
-        l21.appendChild(l31);
+    //     var l31 = document.createElement( 'h4' );
+    //     l31.className = "panel-title";
+    //     l21.appendChild(l31);
 
-        var l41 = document.createElement( 'a' );
-        l41.setAttribute('role', "button");
-        l41.href = "#linkedcollapse"+index;
-        l41.setAttribute('data-toggle', "collapse");
-        l41.setAttribute('aria-expanded', "false");
-        l41.setAttribute('aria-controls', "linkedcollapse"+index);
-        l41.setAttribute('data-parent',"#accordion");
-        l41.textContent = docData[index].key;
-        l31.appendChild(l41);
+    //     var l41 = document.createElement( 'a' );
+    //     l41.setAttribute('role', "button");
+    //     l41.href = "#linkedcollapse"+index;
+    //     l41.setAttribute('data-toggle', "collapse");
+    //     l41.setAttribute('aria-expanded', "false");
+    //     l41.setAttribute('aria-controls', "linkedcollapse"+index);
+    //     l41.setAttribute('data-parent',"#accordion");
+    //     l41.textContent = docData[index].key;
+    //     l31.appendChild(l41);
 
-        var l22 = document.createElement( 'div' );
-        l22.className = "panel-collapse collapse";
-        l22.setAttribute('role', "tabpanel");
-        l22.id = "linkedcollapse"+index;
-        l22.setAttribute('aria-labelledby', "relatedheading"+index);
-        l1.appendChild(l22);
+    //     var l22 = document.createElement( 'div' );
+    //     l22.className = "panel-collapse collapse";
+    //     l22.setAttribute('role', "tabpanel");
+    //     l22.id = "linkedcollapse"+index;
+    //     l22.setAttribute('aria-labelledby', "relatedheading"+index);
+    //     l1.appendChild(l22);
 
-        var l32 = document.createElement( 'div' );
-        l32.className = "panel-body";
-        l32.innerHTML = '<p>' + 
-                        docData[i].summary + "<br/><br/>" +
-                        "#" + docData[i].number + "<br/><br/>" +
-                        "Committed By " + docData[i].committer + "<br/>" +
-                        "Committed on " + docData[i].date + "<br/><br/>"+
-                        "Created By " + docData[i].author +
-                        '</p>';
-        l22.appendChild(l32);
+    //     var l32 = document.createElement( 'div' );
+    //     l32.className = "panel-body";
+    //     l32.innerHTML = '<p>' + 
+    //                     docData[i].summary + "<br/><br/>" +
+    //                     "#" + docData[i].number + "<br/><br/>" +
+    //                     "Committed By " + docData[i].committer + "<br/>" +
+    //                     "Committed on " + docData[i].date + "<br/><br/>"+
+    //                     "Created By " + docData[i].author +
+    //                     '</p>';
+    //     l22.appendChild(l32);
 
-        // list.append(
-        //     $('<div>').addClass("panel panel-default").append(
-        //         $('<div>').attr({class: "panel-heading", role: "tab", id: "relatedheading"+index}).append(
+    //     // list.append(
+    //     //     $('<div>').addClass("panel panel-default").append(
+    //     //         $('<div>').attr({class: "panel-heading", role: "tab", id: "relatedheading"+index}).append(
 
-        //             $('<h4>').addClass("panel-title").append(
+    //     //             $('<h4>').addClass("panel-title").append(
 
-        //                 $('<a>').attr({
-        //                     role: "button",
-        //                     'data-toggle': "collapse",
-        //                     //'data-parent': "#doc_list",
-        //                     href: "#relatedcollapse"+index,
-        //                     'aria-expanded': "false",
-        //                     'aria-controls': "relatedcollapse"+index
-        //                 }).text(docData[index].key)
-        //                 // $('<a>').attr({href: "#", class: "pull-right"}).append(
-        //                 //     $('<span>').addClass("glyphicon glyphicon-th-list")
-        //                 // )
+    //     //                 $('<a>').attr({
+    //     //                     role: "button",
+    //     //                     'data-toggle': "collapse",
+    //     //                     //'data-parent': "#doc_list",
+    //     //                     href: "#relatedcollapse"+index,
+    //     //                     'aria-expanded': "false",
+    //     //                     'aria-controls': "relatedcollapse"+index
+    //     //                 }).text(docData[index].key)
+    //     //                 // $('<a>').attr({href: "#", class: "pull-right"}).append(
+    //     //                 //     $('<span>').addClass("glyphicon glyphicon-th-list")
+    //     //                 // )
                         
-        //             )
-        //         ),
-        //         $('<div>').attr({
-        //             id: "relatedcollapse"+index,
-        //             class: "panel-collapse collapse",
-        //             role: "tabpanel",
-        //             'aria-labelledby': "relatedheading"+index
-        //         }).append(
-        //             $('<div>').addClass("panel-body").append('<p>').html(
-        //                 docData[i].summary + "<br/><br/>" +
-        //                 "#" + docData[i].number + "<br/><br/>" +
-        //                 "Committed By " + docData[i].committer + "<br/>" +
-        //                 "Committed on " + docData[i].date + "<br/><br/>"+
-        //                 "Created By " + docData[i].author
-        //                 )
-        //         )
-        //     )
-        // );
-    };
-    console.log(object.position.x+ ", " + object.position.y + ", " + object.position.z);
-    linkObj = new THREE.CSS3DSprite( container );
-    linkObj.position.x = object.position.x + 200;
-    linkObj.position.y = object.position.y;
-    linkObj.position.z = object.position.z;
-    css3dscene.add( linkObj );
+    //     //             )
+    //     //         ),
+    //     //         $('<div>').attr({
+    //     //             id: "relatedcollapse"+index,
+    //     //             class: "panel-collapse collapse",
+    //     //             role: "tabpanel",
+    //     //             'aria-labelledby': "relatedheading"+index
+    //     //         }).append(
+    //     //             $('<div>').addClass("panel-body").append('<p>').html(
+    //     //                 docData[i].summary + "<br/><br/>" +
+    //     //                 "#" + docData[i].number + "<br/><br/>" +
+    //     //                 "Committed By " + docData[i].committer + "<br/>" +
+    //     //                 "Committed on " + docData[i].date + "<br/><br/>"+
+    //     //                 "Created By " + docData[i].author
+    //     //                 )
+    //     //         )
+    //     //     )
+    //     // );
+    // };
+    // console.log(object.position.x+ ", " + object.position.y + ", " + object.position.z);
+    if(linkDocObj != null){
+        css3dscene.remove(linkDocObj);
+    }
+    linkDocObj = new THREE.CSS3DSprite( container );
+    linkDocObj.position.x = object.position.x + 150;
+    linkDocObj.position.y = object.position.y;
+    linkDocObj.position.z = object.position.z;
+    css3dscene.add( linkDocObj );
 }
 
 function onKeyDown( event ) {
@@ -596,10 +690,23 @@ function onKeyDown( event ) {
                 // scene.remove(rightline);
                 // scene.remove(leftline);
             }
+            if(linkCodeObj!=null){
+                css3dscene.remove( linkCodeObj );
+            }
+            if(linkDocObj!=null){
+                css3dscene.remove( linkDocObj );
+            }
+            linkCodeObj = null;
+            linkDocObj = null;
         }
-        showRelatedDocs(false);
-        $("a[href='#collapse_list']").text("Related Defects");
+        showRelatedCode(false);
+        //showRelatedDocs(false);
+        //$("a[href='#collapse_list']").text("Related Defects");
         SELECTED = null;
+    }else if(event.keyCode == 57){
+        onZoomIn();
+    }else if(event.keyCode == 48){
+        onZoomOut();
     }
 }
 
@@ -653,6 +760,46 @@ $(document).on('click.jstree', '.jstree-ocl',function(e){
     //console.log(target);
     //$('#collapse_list').collapse('toggle');
     //showRelatedDocs(true);
+});
+
+$(document).on({
+    click: function(e){
+        //e.preventDefault();
+        e.stopImmediatePropagation();
+        //console.log("!!!!!!");
+        //var target = $(this).href;
+        //console.log(target);
+        //$('#collapse_list').collapse('toggle');
+        //showRelatedDocs(true);
+    }, mousemove: function(e){
+        //e.preventDefault();
+        e.stopImmediatePropagation();
+        //console.log("!!!!!!");
+        //var target = $(this).href;
+        //console.log(target);
+        //$('#collapse_list').collapse('toggle');
+        //showRelatedDocs(true);
+    }, mousedown: function(e){
+        //e.preventDefault();
+        e.stopImmediatePropagation();
+        //console.log("!!!!!!");
+        //var target = $(this).href;
+        //console.log(target);
+        //$('#collapse_list').collapse('toggle');
+        //showRelatedDocs(true);
+    }, mousewheel: function(e){
+        //e.preventDefault();
+        e.stopImmediatePropagation();
+        //console.log("!!!!!!");
+        //var target = $(this).href;
+        //console.log(target);
+        //$('#collapse_list').collapse('toggle');
+        //showRelatedDocs(true);
+    }
+}, '.jstree');
+
+$(document).on('click', '.panel-body', function(e){
+    e.stopImmediatePropagation();
 })
 
 
@@ -664,6 +811,21 @@ $(document).on('dblclick', '.labels',function(e){
     onZoomIn();
     $('#changes').jstree('open_node', e.target.id);
 })
+
+$(document).on('mouseenter', '[style*="text-overflow: ellipsis"]', function(e){
+    e.stopImmediatePropagation();
+    $(this).css({
+        'text-overflow': 'inherit',
+        'overflow': 'visible',
+    });
+});
+
+$(document).on('mouseleave','[style*="text-overflow: inherit"]', function(e){
+    $(this).css({
+        'text-overflow': 'ellipsis',
+        'overflow': 'hidden'
+    });
+});
 
 function onMouseWheel( event ){
     //createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
@@ -715,6 +877,13 @@ function onZoomIn(){
             for(var key in label_objects){
                 css3dscene.remove(label_objects[key]);
             }
+            if(linkCodeObj!=null){
+                css3dscene.add( linkCodeObj );
+            }
+            if(linkDocObj!=null){
+                css3dscene.add( linkDocObj );
+            }
+    
             showDetail = true;
         }else{
             camera.position.y = cameraHeight / 3 * 2;
@@ -741,9 +910,18 @@ function onZoomOut(){
             }
             for(var key in label_objects){
                 css3dscene.add(label_objects[key]);
+            }
+            if(linkCodeObj!=null){
+                css3dscene.remove( linkCodeObj );
+            }
+            if(linkDocObj!=null){
+                css3dscene.remove( linkDocObj );
             }           
         }else{
             camera.position.y = cameraHeight;
+            camera.position.x = 0;
+            camera.position.z = 0;
+            controls.target.set (0,0,0);
             camera.lookAt(controls.target);
             showDetail = false;
         }      

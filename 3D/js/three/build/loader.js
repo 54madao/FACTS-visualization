@@ -66,7 +66,65 @@ function loadFiles(url){
  				    				results.push({
  				    					id: i + '_' + j,
  				    					text: data.codeChangedPackagesList[i].codeChangedFileList[j].codePathName.match(/[^\\/]+\.[^\\/]+$/)[0],
- 				    					icon: 'jstree-file'
+ 				    					icon: 'jstree-file',
+                                        children: (function(i, j){
+                                            var results = [];
+                                            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('AddedMethods')){
+                                                results.push({
+                                                    id: i + '_' + j + '_A',
+                                                    text: 'AddedMethods',
+                                                    icon: 'glyphicon-leaf',
+                                                    children: (function(i, j){
+                                                        var results = [];
+                                                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].AddedMethods.length; k++){
+                                                            results.push({
+                                                                id: i + '_' + j + '_A' + k,
+                                                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].AddedMethods[k].methodName,
+                                                                icon: 'glyphicon-leaf'
+                                                            });
+                                                        }
+                                                        return results;
+                                                    })(i, j)
+                                                });
+                                            }
+                                            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('DeletedMethods')){
+                                                results.push({
+                                                    id: i + '_' + j + '_D',
+                                                    text: 'DeletedMethods',
+                                                    icon: 'glyphicon-leaf',
+                                                    children: (function(i, j){
+                                                        var results = [];
+                                                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].DeletedMethods.length; k++){
+                                                            results.push({
+                                                                id: i + '_' + j + '_D' + k,
+                                                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].DeletedMethods[k].methodName,
+                                                                icon: 'glyphicon-leaf'
+                                                            });
+                                                        }
+                                                        return results;
+                                                    })(i, j)
+                                                });
+                                            }
+                                            if(data.codeChangedPackagesList[i].codeChangedFileList[j].hasOwnProperty('ModifiedMethods')){
+                                                results.push({
+                                                    id: i + '_' + j + '_M',
+                                                    text: 'ModifiedMethods',
+                                                    icon: 'glyphicon-leaf',
+                                                    children: (function(i, j){
+                                                        var results = [];
+                                                        for(var k = 0; k < data.codeChangedPackagesList[i].codeChangedFileList[j].ModifiedMethods.length; k++){
+                                                            results.push({
+                                                                id: i + '_' + j + '_M' + k,
+                                                                text: data.codeChangedPackagesList[i].codeChangedFileList[j].ModifiedMethods[k].methodName,
+                                                                icon: 'glyphicon-leaf'
+                                                            });
+                                                        }
+                                                        return results;
+                                                    })(i, j)
+                                                });
+                                            }
+                                            return results;
+                                        })(i, j)
  				    				});
  				    			}
  				    			return results;
@@ -77,14 +135,21 @@ function loadFiles(url){
     			})()
     		}
     	}).bind("dblclick.jstree", function (e, data) {
+            e.stopImmediatePropagation();
             var node = $(event.target).closest("li");
             //var data = node.data("id");
             // Do some action
             console.log(node.attr('id'));
             console.log(building_objects[node.attr('id')]);
             if(building_objects[node.attr('id')] != null){
-                moveUsingMatrix(building_objects[node.attr('id')], 100, 150);
+                moveUsingMatrix(building_objects[node.attr('id')], 200, 250);
                 onZoomIn();
+                showRelation(building_objects[node.attr('id')]);
+                if(linkCodeObj!=null){
+                    css3dscene.remove( linkCodeObj );
+                }
+                linkCodeObj = method_objects[node.attr('id')];
+                css3dscene.add( linkCodeObj );
             }
         }).on('select_node.jstree', function(e, data){
 
@@ -95,13 +160,22 @@ function loadFiles(url){
             if(building_objects[data.selected] != null){
                 $("a[href='#collapse_list']").text(building_objects[data.selected].name.split('#')[1]);
                 if(SELECTED){
-                    SELECTED.material.emissive.setHex(SELECTED.currentHex);    
+                    SELECTED.material.emissive.setHex(SELECTED.currentHex);
+                    if(linkCodeObj!=null){
+                        css3dscene.remove( linkCodeObj );
+                    }
+                    if(linkDocObj!=null){
+                        css3dscene.remove( linkDocObj );
+                    }
+                    linkCodeObj = null;
+                    linkDocObj = null;     
                 }
                 SELECTED = building_objects[data.selected];
                 SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 SELECTED.material.emissive.setHex(onclick_color);
-                showRelatedDocs(true);
-                //showRelation(SELECTED);
+                //showRelatedDocs(true);
+                // showRelation(SELECTED);
+                showRelatedCode(false);
             }
             else{
                 // showRelatedDocs(false);
@@ -132,7 +206,8 @@ function loadDocs(url){
 	var res;
 	$.ajax({
 	    type: 'GET',
-	    url: 'http://jsonstub.com/FACTS/docChangeSample-2.1.0-2.1.10',
+	    //url: 'http://jsonstub.com/FACTS/docChangeSample-2.1.0-2.1.10',
+        url: url,
 	    contentType: 'application/json',
 	    beforeSend: function (request) {
 	        request.setRequestHeader('JsonStub-User-Key', 'db3469d5-0f9f-4a58-bac5-c343433fa8a4');
@@ -161,7 +236,7 @@ function loadDocs(url){
     						$('<a>').attr({
     							role: "button",
     							'data-toggle': "collapse",
-    							//'data-parent': "#doc_list",
+    							'data-parent': "#doc_list",
     							href: "#collapse"+i,
     							'aria-expanded': "false",
     							'aria-controls': "collapse"+i
@@ -174,16 +249,35 @@ function loadDocs(url){
     					role: "tabpanel",
     					'aria-labelledby': "heading"+i
     				}).append(
-    					$('<div>').addClass("panel-body").append('<p>').html(
-                            data[i].summary + "<br/><br/>" +
-                            "#" + data[i].number + "<br/><br/>" +
-                            "Committed By " + data[i].committer + "<br/>" +
-                            "Committed on " + data[i].date + "<br/><br/>"+
-                            "Created By " + data[i].author
+    					$('<div>').addClass("panel-body").append(
+                            $('<p>').html(
+                                data[i].summary + "<br/><br/>" +
+                                "#" + data[i].number + "<br/><br/>" +
+                                "Committed By " + data[i].committer + "<br/>" +
+                                "Committed on " + data[i].date + "<br/><br/>"+
+                                "Created By " + data[i].author + "<br/><br/>" +
+                                "<a href='" + data[i].link + "' target='_blank'>Link</a>" + "<br/>"
+                            ).append(
+                                $('<a>').attr({
+                                    href: '#'
+                                }).text("show related files").on('click', function(){
+                                    showRelatedCode(true);
+                                    if(linkCodeObj!=null){
+                                        css3dscene.remove( linkCodeObj );
+                                    }
+                                    if(linkDocObj!=null){
+                                        css3dscene.remove( linkDocObj );
+                                    }
+                                    linkCodeObj = null;
+                                    linkDocObj = null;
+                                })
                             )
+                        )
     				).on('shown.bs.collapse', function(e){
                         e.stopImmediatePropagation();
-                        showRelatedCode(true);
+                        //showRelatedCode(true);
+                        $('#left_tab a[href="#docs"]').tab('show');
+
                     }).on('hidden.bs.collapse', function(e){
                         e.stopImmediatePropagation();
                         showRelatedCode(false);
@@ -261,7 +355,8 @@ function loadVersions(){
                 console.log(options[ui.values[ 0 ]] + " | " + options[ui.values[ 1 ]]);
                 var url = 'http://jsonstub.com/FACTS/codeChangeSample-' + options[ui.values[ 0 ]] + '-' + options[ui.values[ 1 ]];
                 fileData = loadFiles(url);
-                docData = loadDocs();
+                url = 'http://jsonstub.com/FACTS/docChangeSample-' + options[ui.values[ 0 ]] + '-' + options[ui.values[ 1 ]];
+                docData = loadDocs(url);
                 // if(fileData == null)
                 //     console.log(fileData);
                 
@@ -272,7 +367,8 @@ function loadVersions(){
             }
         }).slider("pips", {
             rest: "label",
-            labels: options
+            labels: options,
+            step: 10,
         })                 
         .slider("float", {
             labels: options
