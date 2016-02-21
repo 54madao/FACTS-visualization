@@ -10,9 +10,9 @@
         <link rel="stylesheet" href="js/jstree/dist/themes/default/style.min.css" />
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.css"/>
         <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.theme.css"/>
+        <link rel="stylesheet" type="text/css" href="js/jQuery-ui-Slider-Pips-1.11.0/dist/jquery-ui-slider-pips.min.css">
         <style type="text/css">
             .list_left { 
-                color: ffff; 
                 font-weight: bold; 
                 font-size: 12px; 
                 z-index: 100;
@@ -23,7 +23,6 @@
                 left: 0px;
             }
             .list_right { 
-                color: ffff; 
                 font-weight: bold; 
                 font-size: 12px; 
                 z-index: 100;
@@ -34,11 +33,13 @@
                 right: 0px;
             }
             #info {
-                color: ffff;
                 position: absolute;
+                top: 0px; 
                 padding: 10px;
-                width: 100%;
                 text-align: center;
+                left: 350px;
+                right: 300px;
+                z-index: 100;
             }
             #changes{
                 border-right-style: groove;
@@ -102,10 +103,14 @@
                 font-size: 12px;
                 color: rgba(127,255,255,0.75);
             }
+
+
         </style>
     </head>        
 
     <body>
+       
+
         <div class="list_left" > 
             <!-- Nav tabs -->
             <ul class="nav nav-tabs nav-justified" role="tablist" id="left_tab">
@@ -125,9 +130,7 @@
                 </div>
             </div>
         </div>
-        <div id="slider-vertical">
 
-        </div>
         <div class="list_right">
             
             <div class="panel panel-default" id="right_tab">
@@ -147,12 +150,14 @@
                 </div>
             </div>
         </div>
-        <div id="3d">
+        
+        <div id="info"><span id="version1"></span><span> | </span><span id="version2"></span>
+            <div id="circles-slider"></div>
+        </div>
+
+        <div id="main">
 
         </div>
-        <div id="info"><span id="version1">version1</span><span> | </span><span id="version2">version2</span>
-        </div>
-
         <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
         <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -160,6 +165,8 @@
         <script src="js/jstree/dist/jstree.min.js"></script>
 
         <script src="js/jquery-ui-1.11.4/jquery-ui.js"></script>
+        <script src="js/jQuery-ui-Slider-Pips-1.11.0/dist/jquery-ui-slider-pips.min.js"></script>
+
 
         <script src="js/three/build/three.js"></script>
         <script src="js/three/build/js/controls/OrbitControls.js"></script>
@@ -180,9 +187,11 @@
         <script src="js/three/build/js/fonts/droid/droid_serif_regular.typeface.js"></script>
         <script src="js/three/build/js/fonts/droid/droid_serif_bold.typeface.js"></script>
 
-        <script type="text/javascript" src="js/three/build/draw.js"></script>
+        
         <script type="text/javascript" src="js/three/build/listener.js"></script>
+        <script type="text/javascript" src="js/three/build/draw.js"></script>
         <script type="text/javascript" src="js/three/build/loader.js"></script>
+       <!-- <script type="text/javascript" src="js/three/build/vis.js"></script>-->
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
 
@@ -190,7 +199,7 @@
             // main()
             var container, stats, tween;
             var camera, controls, scene, renderer, css3dscene, css3drenderer;
-            var building_objects = [], plane, group;
+            var building_objects = [], label_objects = [], block_objects = [], sprite_objects = [], base_object, relatedObj = [], plane, group;
             var cameraPoint;
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(),
@@ -200,8 +209,11 @@
             var cameraPos0;
             var cameraUp0;
 
+            var cameraHeight;
+
             var onclick_color = 0x00ff00;
             var onhover_color = 0xff00ff;
+            var onlink_color = 0xffff00;
             //pointer line
             var rightline;
             var leftline;
@@ -214,13 +226,19 @@
 
             var building_border = 5;
             var block_border = 35;
+            var label_border = 20;
             var building_scale =10;
             var text_scale = 30;
+            var fontSize = 40;
 
-            var fileData, linkData, docData;
+            var fileData, linkData, docData, vData, globle_postionts;
 
-            fileData = loadFiles();
-            docData = loadDocs();
+            var showDetail = false;
+
+            vData = loadVersions();
+            //fileData = loadFiles();
+            
+            
             //console.log(JSON.stringify(fileData, null, 4));
             init();
             animate();
@@ -228,13 +246,13 @@
             function init() {
 
                 // HTML DOC
-                container = document.getElementById("3d");
+                container = document.getElementById("main");
                 
                 //document.body.appendChild( container );
 
                 // create camera
                 camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-                camera.position.z = 1000;
+                camera.position.y = 1500;
                 //camera.lookAt( new THREE.Vector3() );
                 cameraPos0 = camera.position.clone();
                 cameraUp0 = camera.up.clone();
@@ -262,12 +280,21 @@
                 //createBase(fileData);
 
                 //createCity(fileData);
+                //createSlider();
 
-                var positions = calculatePositions(fileData);
-                createBlocks(positions[0], positions[2][0].offset);
-                createBuildings(positions[1], positions[2][0].offset);
-                createBase(positions[2]);
-               
+                // if(fileData != null){
+                //     globle_postionts = calculatePositions(fileData);
+                //     createLabels(globle_postionts[0], globle_postionts[3][0].offset);
+                //     createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
+                //     createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
+                //     cameraHeight = createBase(globle_postionts[3]) * 2 / 14 * 14;
+                //     camera.position.y = cameraHeight;
+
+                //     for(var key in label_objects){
+                //         css3dscene.add(label_objects[key]);
+                //     }
+                // }
+                
                 // plane = new THREE.Mesh(
                 //     new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
                 //     new THREE.MeshBasicMaterial( { visible: false } )
@@ -276,7 +303,13 @@
 
                 //var CONTAINER_STYLE = getComputedStyle(container,null);
                 //var CONTAINER_WIDTH = parseInt(CONTAINER_STYLE.getPropertyValue('width'));
-                // create renderer
+
+                // container.style.width = window.innerWidth;
+                // container.style.height = window.innerHeight;
+                // container.style.backgroundColor="#00FF00";
+
+
+                //create renderer
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
                 renderer.setClearColor(0xffffff, 1);
                 renderer.setPixelRatio( window.devicePixelRatio );
@@ -286,25 +319,32 @@
                 // renderer.shadowMap.enabled = true;
                 // renderer.shadowMap.type = THREE.PCFShadowMap;
                 //renderer.domElement.style.position = "absolute";
-                //container.appendChild( renderer.domElement );
+                container.appendChild( renderer.domElement );
                 //container.insertBefore(renderer.domElement, container.firstChild);
-                renderer.domElement.style.zIndex = 5;
-                document.body.appendChild(renderer.domElement);
-
+                renderer.domElement.style.zIndex = 1;
+                //renderer.domElement.style.backgroundColor="#00FF00";
+                //document.body.appendChild(renderer.domElement);
+                
                 //css3drenderer
                 css3drenderer = new THREE.CSS3DRenderer();
                 css3drenderer.setSize( window.innerWidth, window.innerHeight );
                 css3drenderer.domElement.style.position = 'absolute';
                 //css3drenderer.domElement.style.right = "100px";
                 //css3drenderer.domElement.style.right = "200 px";
-                //container.appendChild( css3drenderer.domElement );
+                container.appendChild( css3drenderer.domElement );
                 css3drenderer.domElement.style.top = 0;
-                document.body.appendChild(css3drenderer.domElement);
+                css3drenderer.domElement.style.zIndex = 0;
+                //css3drenderer.domElement.style.backgroundColor="#00FF00";
+                //document.body.appendChild(css3drenderer.domElement);
+
+
+
+
 
                 // create view control
                 controls = new THREE.OrbitControls(this.camera);
-                controls.target.set (0,10,0);
-
+                controls.target.set (0,0,0);
+                controls.maxDistance = cameraHeight;
 
 
 
@@ -313,9 +353,11 @@
                 document.addEventListener( 'mousemove', onDocumentMouseMove, false );   
                 window.addEventListener( 'resize', onWindowResize, false );
                 document.addEventListener( 'click', onDocumentClick, false );
+                //$('#3d').on('click', onDocumentClick);
                 document.addEventListener( 'dblclick', onDocumentDblClick, false );
-
-
+                window.addEventListener( 'keydown', onKeyDown, false );
+                document.addEventListener( 'mousewheel', onMouseWheel, false );
+                //window.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
                 
                 // var dir = canvasPosition.sub( camera.position ).normalize();
                 // var distance = - camera.position.z / dir.z;
@@ -329,7 +371,9 @@
                 // cameraPoint.scale.x = cameraPoint.scale.y = 50;
                 // cameraPoint.position.copy(cameraPosition);
                 // scene.add(cameraPoint);
-
+                // d3.json("miserables.json", function(error, root){
+                //     console.log('!!!');
+                // });
             }
 
                     //
@@ -347,8 +391,9 @@
                 TWEEN.update();
                 css3drenderer.render( css3dscene, camera);
                 renderer.render( scene, camera );
-                controls.update();
-                
+                //controls.update();
+                //console.log(cameraHeight);
+                //console.log("x:" + camera.position.x + ", y:" + camera.position.y + ", z" + camera.position.z);
             
 
                 // //to canvas space
