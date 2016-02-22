@@ -176,12 +176,21 @@ function onDocumentClick( event ) {
                 //SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 material.emissive.setHex(onclick_color);
                 $("a[href='#collapse_list']").text(SELECTED.name.split('#')[1]);
+                $('#changes').jstree('close_all');
                 $('#changes').jstree('open_node', SELECTED.name.split('#')[0].split('_')[0]);
                 console.log(SELECTED.name.split('#')[0]);
                 $('#changes').jstree('deselect_all');
                 $('#changes').jstree('select_node', SELECTED.name.split('#')[0]);
                 var uid = SELECTED.name.split('#')[0];
-                $('#changes').scrollTop($('#'+uid).position().top);
+                console.log($('#changes').scrollTop());
+                console.log($('#'+uid).position().top);
+                var p1 = $('#'+uid).position().top;
+                var p2 = $('#changes').scrollTop();
+                var scrollValue = p1 > p2 ? p1 - p2 - 50 : p1 + p2 - 50;
+                console.log(scrollValue);
+                $('#changes').scrollTop(scrollValue);
+                
+
                 // method_objects[uid].forEach(function(object){
                 //     css3dscene.add( object );
                 // });
