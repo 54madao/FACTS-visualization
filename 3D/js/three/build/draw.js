@@ -381,7 +381,7 @@ function calculatePositions(data){
 
 
         var building_start_x = label_x - width / 2 + building_border * 2 + building_scale / 2;
-        var building_start_y = label_y + length / 2 + building_border * 2 + building_scale / 2;
+        var building_start_y = label_y + length / 2 - building_border * 2 - building_scale / 2;
 
         var building_postition_x = building_start_x;
         var building_postition_y = building_start_y;
@@ -638,7 +638,7 @@ function createBlocks(positions,offset){
         // spritey.position.x = block_cube.position.x;
         // spritey.position.y = 0;
         // spritey.position.z = block_cube.position.z + block_width / 2;
-        spritey.position.set( block_cube.position.x - block_width / 2 + 50, block_cube.position.y + block_width / 2 + text_scale / 2, 0);
+        spritey.position.set( block_cube.position.x - block_width / 2 + 50, block_cube.position.y - block_width / 2 - text_scale / 2, 1);
         //console.log("x: " + block_cube.position.x);
         //console.log("spritey.x: " + spritey.position.x);
         group.add( spritey );
