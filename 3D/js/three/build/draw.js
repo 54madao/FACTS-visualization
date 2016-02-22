@@ -578,7 +578,7 @@ function createBlocks(positions,offset){
         var block_length = positions[i].length;
         var block_width = positions[i].width;
         var block_height = 0;
-        var block = new THREE.BoxGeometry( block_width, block_height, block_length );
+        var block = new THREE.BoxGeometry( block_width, block_length, block_height );
         var block_material = new THREE.MeshLambertMaterial( { color: 0xffffff, overdraw: 0.5 } );
 
         var block_cube = new THREE.Mesh( block, block_material  );
@@ -638,7 +638,7 @@ function createBlocks(positions,offset){
         // spritey.position.x = block_cube.position.x;
         // spritey.position.y = 0;
         // spritey.position.z = block_cube.position.z + block_width / 2;
-        spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.y + block_width / 2 + text_scale / 2);
+        spritey.position.set( block_cube.position.x - block_width / 2 + 50, block_cube.position.y + block_width / 2 + text_scale / 2, 0);
         //console.log("x: " + block_cube.position.x);
         //console.log("spritey.x: " + spritey.position.x);
         group.add( spritey );
@@ -689,7 +689,7 @@ function createBuildings(positions,offset){
     //console.log(positions.length);
     for(var i = 0; i < positions.length; i++){
         //console.log(positions[i]);       
-        var build = new THREE.BoxGeometry( building_scale, positions[i].height, building_scale);
+        var build = new THREE.BoxGeometry( building_scale, building_scale, positions[i].height);
         var build_material = new THREE.MeshLambertMaterial( { color: 0xff0000, overdraw: 0.5, transparent: true, opacity: 1 } );
         var build_cube = new THREE.Mesh( build, build_material  );
 

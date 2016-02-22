@@ -871,7 +871,7 @@ function onMouseWheel( event ){
 
 function onZoomIn(){
     
-    if(camera.position.y > cameraHeight / 3 * 2){
+    if(camera.position.z > cameraHeight / 3 * 2){
         if(!showDetail){
             block_objects.forEach(function(object){
                 //console.log(object);
@@ -895,17 +895,17 @@ function onZoomIn(){
     
             showDetail = true;
         }else{
-            camera.position.y = cameraHeight / 3 * 2;
+            camera.position.z = cameraHeight / 3 * 2;
             camera.lookAt(controls.target);
         }
-    }else if(camera.position.y > cameraHeight / 3){
-        camera.position.y = cameraHeight / 3;
+    }else if(camera.position.z > cameraHeight / 3){
+        camera.position.z = cameraHeight / 3;
         camera.lookAt(controls.target);
     }
 }
 
 function onZoomOut(){
-    if(camera.position.y > cameraHeight / 3 * 2){       
+    if(camera.position.z > cameraHeight / 3 * 2){       
         if(!showDetail){
             block_objects.forEach(function(object){
                 //console.log(object);
@@ -927,15 +927,15 @@ function onZoomOut(){
                 css3dscene.remove( linkDocObj );
             }           
         }else{
-            camera.position.y = cameraHeight;
+            camera.position.z = cameraHeight;
             camera.position.x = 0;
-            camera.position.z = 0;
+            camera.position.y = 0;
             controls.target.set (0,0,0);
             camera.lookAt(controls.target);
             showDetail = false;
         }      
-    }else if(camera.position.y > cameraHeight / 3){
-        camera.position.y = cameraHeight / 3 * 2;
+    }else if(camera.position.z > cameraHeight / 3){
+        camera.position.z = cameraHeight / 3 * 2;
         camera.lookAt(controls.target);
     }
 }
