@@ -361,6 +361,7 @@ function onDocumentDblClick(event){
             css3dscene.remove( linkCodeObj );
         }
         linkCodeObj = method_objects[uid];
+        //console.log("position: " + camera.position);
         css3dscene.add( linkCodeObj );
         //controls.update();
 

@@ -390,6 +390,34 @@
 
             function render() {
                 TWEEN.update();
+
+                // if(linkCodeObj != null){
+                //     var vector = new THREE.Vector3();
+                //     var object = new THREE.Object3D();
+                //     object.position.x = linkCodeObj.position.x;
+                //     object.position.y = linkCodeObj.position.y;
+                //     object.position.z = linkCodeObj.position.z;
+                //     vector.copy(camera.position);
+                //     linkCodeObj.lookAt(vector);
+                //     linkCodeObj.rotation.x = object.rotation.x;
+                //     linkCodeObj.rotation.y = object.rotation.y;
+                //     linkCodeObj.rotation.z = object.rotation.z;
+                // }
+
+                // if(linkDocObj != null){
+                //     var vector = new THREE.Vector3();
+                //     var object = new THREE.Object3D();
+                //     object.position.x = linkDocObj.position.x;
+                //     object.position.y = linkDocObj.position.y;
+                //     object.position.z = linkDocObj.position.z;
+                //     vector.copy(camera.position);
+                //     linkDocObj.lookAt(vector);
+                //     linkDocObj.rotation.x = object.rotation.x;
+                //     linkDocObj.rotation.y = object.rotation.y;
+                //     linkDocObj.rotation.z = object.rotation.z;
+                // }
+
+
                 css3drenderer.render( css3dscene, camera);
                 renderer.render( scene, camera );
                 //controls.update();
