@@ -579,7 +579,7 @@ function createBlocks(positions,offset){
         var block_width = positions[i].width;
         var block_height = 0;
         var block = new THREE.BoxGeometry( block_width, block_length, block_height );
-        var block_material = new THREE.MeshLambertMaterial( { color: 0xffffff, overdraw: 0.5 } );
+        var block_material = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5 });
 
         var block_cube = new THREE.Mesh( block, block_material  );
 

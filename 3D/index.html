@@ -175,6 +175,8 @@
         <script src="js/three/build/js/utils/FontUtils.js"></script>
         <script src="js/three/build/js/libs/tween.min.js"></script>
         <script src="js/three/build/js/renderers/CSS3DRenderer.js"></script>
+        <script src="js/three/build/js/renderers/CanvasRenderer.js"></script>
+        <script src="js/three/build/js/renderers/Projector.js"></script>
 
         <script src="js/three/build/js/fonts/gentilis_bold.typeface.js"></script>
         <script src="js/three/build/js/fonts/gentilis_regular.typeface.js"></script>
@@ -311,7 +313,7 @@
 
 
                 //create renderer
-                renderer = new THREE.WebGLRenderer( { antialias: true } );
+                renderer = new THREE.CanvasRenderer();
                 renderer.setClearColor(0xf0f0f0, 1);
                 renderer.setPixelRatio( window.devicePixelRatio );
                 renderer.setSize( window.innerWidth, window.innerHeight );
