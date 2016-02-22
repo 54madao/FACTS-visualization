@@ -156,6 +156,7 @@ function sceneInit(){
     // create camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
     //camera.position.y = 1000;
+    camera.up.set(0,0,1);
     //camera.lookAt( new THREE.Vector3() );
     cameraPos0 = camera.position.clone();
     cameraUp0 = camera.up.clone();
@@ -185,7 +186,7 @@ function sceneInit(){
     createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
     createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
     cameraHeight = createBase(globle_postionts[3]) * 2 / 14 * 14;
-    camera.position.y = cameraHeight;
+    camera.position.z = cameraHeight;
     
     for(var key in label_objects){
         css3dscene.add(label_objects[key]);
@@ -351,7 +352,7 @@ function calculatePositions(data){
     var base_position = [];
     var numColsBlocks = Math.ceil(Math.sqrt(data.codeChangedPackagesList.length));
     var block_position_x = 0;
-    var block_position_z = 0;
+    var block_position_y = 0;
     var maxRowlength = 0;
     var maxWidth = 0;
     var maxlength = 0;
@@ -366,7 +367,7 @@ function calculatePositions(data){
     console.log("maxLabelWidth: " + maxLabelWidth);
 
 
-    for(var i = 0, label_x = maxLabelWidth / 2, label_z = (maxLabelWidth + text_scale) / 2; i < data.codeChangedPackagesList.length; i++){
+    for(var i = 0, label_x = maxLabelWidth / 2, label_y = - (maxLabelWidth + text_scale) / 2; i < data.codeChangedPackagesList.length; i++){
 
         
 
@@ -380,10 +381,10 @@ function calculatePositions(data){
 
 
         var building_start_x = label_x - width / 2 + building_border * 2 + building_scale / 2;
-        var building_start_z = label_z - length / 2 + building_border * 2 + building_scale / 2;
+        var building_start_y = label_y + length / 2 + building_border * 2 + building_scale / 2;
 
         var building_postition_x = building_start_x;
-        var building_postition_z = building_start_z;
+        var building_postition_y = building_start_y;
 
         var sum = 0;
         for(var j = 0; j < numbuildings; j++){
@@ -445,7 +446,7 @@ function calculatePositions(data){
 
             building_postitions.push({
                 x: building_postition_x, 
-                z: building_postition_z,
+                y: building_postition_y,
                 height: build_height,
                 originalHeight: data.codeChangedPackagesList[i].codeChangedFileList[j].changedNumberLinesCode,
                 id: i + "_" + j,
@@ -454,7 +455,7 @@ function calculatePositions(data){
             });
             
             if( (j + 1) % numColsBuildings == 0){
-                building_postition_z += building_scale + building_border * 2;
+                building_postition_y -= building_scale + building_border * 2;
                 building_postition_x = building_start_x;
             }
             else{
@@ -465,7 +466,7 @@ function calculatePositions(data){
             width: maxLabelWidth,
             length: maxLabelWidth + text_scale,
             x: label_x,
-            z: label_z,
+            y: label_y,
             id: i,
             total: sum
         });
@@ -475,7 +476,7 @@ function calculatePositions(data){
             width: width, 
             length: length, 
             x: label_x, 
-            z: label_z
+            y: label_y
         });
         // if((i + 1) % numColsBlocks == 0){
         //     block_position_z += maxRowlength + block_border * 2;
@@ -489,7 +490,7 @@ function calculatePositions(data){
 
         if( (i + 1) % numColsBlocks == 0 ){
             label_x = maxLabelWidth / 2;
-            label_z += maxLabelWidth + text_scale + label_border * 2;
+            label_y -= maxLabelWidth + text_scale + label_border * 2;
         }else{
             label_x += maxLabelWidth + label_border * 2;
         }
@@ -561,9 +562,9 @@ function createLabels(positions, offset){
 
         var object = new THREE.CSS3DObject( element );
         object.position.x = positions[i].x - offset;
-        object.position.y = 0;
-        object.position.z = positions[i].z - offset;
-        object.rotation.x = - Math.PI / 2;
+        object.position.y = positions[i].y + offset;
+        object.position.z = 0;
+        //object.rotation.x = - Math.PI / 2;
         //css3dscene.add( object );
         label_objects[positions[i].id] = object;
     }
@@ -583,8 +584,8 @@ function createBlocks(positions,offset){
         var block_cube = new THREE.Mesh( block, block_material  );
 
         block_cube.position.x = positions[i].x - offset;
-        block_cube.position.y = block_height / 2;
-        block_cube.position.z = positions[i].z - offset;
+        block_cube.position.z = block_height / 2;
+        block_cube.position.y = positions[i].y + offset;
 
         //scene.add( group );
         group.add( block_cube );
@@ -637,7 +638,7 @@ function createBlocks(positions,offset){
         // spritey.position.x = block_cube.position.x;
         // spritey.position.y = 0;
         // spritey.position.z = block_cube.position.z + block_width / 2;
-        spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.z + block_width / 2 + text_scale / 2);
+        spritey.position.set( block_cube.position.x - block_width / 2 + 50, 0, block_cube.position.y + block_width / 2 + text_scale / 2);
         //console.log("x: " + block_cube.position.x);
         //console.log("spritey.x: " + spritey.position.x);
         group.add( spritey );
@@ -693,8 +694,8 @@ function createBuildings(positions,offset){
         var build_cube = new THREE.Mesh( build, build_material  );
 
         build_cube.position.x = positions[i].x - offset;
-        build_cube.position.y = positions[i].height / 2;
-        build_cube.position.z = positions[i].z - offset;
+        build_cube.position.z = positions[i].height / 2;
+        build_cube.position.y = positions[i].y + offset;
         build_cube.name = positions[i].id + "#" + positions[i].name + " (" + positions[i].originalHeight +" LOC)";
         //scene.add( build_cube );
         building_objects[positions[i].id] = build_cube;
@@ -741,8 +742,8 @@ function createBuildings(positions,offset){
 
         container.appendChild(element);
 
-        for(var item of positions[i].methods){
-            for(var method of item.children){
+        positions[i].methods.forEach(function(item){
+            item.children.forEach(function(method){
                 var element = document.createElement( 'div' );
                 element.id = 'R_' + method.id;
                 
@@ -797,8 +798,8 @@ function createBuildings(positions,offset){
                 // //css3dscene.add( object );
                 // methods.push(object);
                 
-            }
-        }
+            });
+        });
         var object = new THREE.CSS3DSprite( container );
         object.position.x = build_cube.position.x - 150;
         object.position.y = build_cube.position.y;
@@ -826,10 +827,10 @@ function createBase(position){
 
     var base_geometry = new THREE.Geometry();
     for ( var i = - size; i <= size;  i += step) {
-        base_geometry.vertices.push( new THREE.Vector3( - size , 0, i ) );
-        base_geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-        base_geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-        base_geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+        base_geometry.vertices.push( new THREE.Vector3( - size , i, 0 ) );
+        base_geometry.vertices.push( new THREE.Vector3(   size, i, 0 ) );
+        base_geometry.vertices.push( new THREE.Vector3( i, - size , 0) );
+        base_geometry.vertices.push( new THREE.Vector3( i, size,   0 ) );
         
         // if(i > size){
         //     base_geometry.vertices.push( new THREE.Vector3( - block_border * 2, 0, size ) );
