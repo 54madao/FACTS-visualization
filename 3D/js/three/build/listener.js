@@ -176,12 +176,21 @@ function onDocumentClick( event ) {
                 //SELECTED.currentHex = SELECTED.material.emissive.getHex();
                 material.emissive.setHex(onclick_color);
                 $("a[href='#collapse_list']").text(SELECTED.name.split('#')[1]);
+                $('#changes').jstree('close_all');
                 $('#changes').jstree('open_node', SELECTED.name.split('#')[0].split('_')[0]);
                 console.log(SELECTED.name.split('#')[0]);
                 $('#changes').jstree('deselect_all');
                 $('#changes').jstree('select_node', SELECTED.name.split('#')[0]);
                 var uid = SELECTED.name.split('#')[0];
-                $('#changes').scrollTop($('#'+uid).position().top);
+                console.log($('#changes').scrollTop());
+                console.log($('#'+uid).position().top);
+                var p1 = $('#'+uid).position().top;
+                var p2 = $('#changes').scrollTop();
+                var scrollValue = p1 > p2 ? p1 - p2 - 50 : p1 + p2 - 50;
+                console.log(scrollValue);
+                $('#changes').scrollTop(scrollValue);
+                
+
                 // method_objects[uid].forEach(function(object){
                 //     css3dscene.add( object );
                 // });
@@ -862,7 +871,7 @@ function onMouseWheel( event ){
 
 function onZoomIn(){
     
-    if(camera.position.y > cameraHeight / 3 * 2){
+    if(camera.position.z > cameraHeight / 3 * 2){
         if(!showDetail){
             block_objects.forEach(function(object){
                 //console.log(object);
@@ -886,17 +895,17 @@ function onZoomIn(){
     
             showDetail = true;
         }else{
-            camera.position.y = cameraHeight / 3 * 2;
+            camera.position.z = cameraHeight / 3 * 2;
             camera.lookAt(controls.target);
         }
-    }else if(camera.position.y > cameraHeight / 3){
-        camera.position.y = cameraHeight / 3;
+    }else if(camera.position.z > cameraHeight / 3){
+        camera.position.z = cameraHeight / 3;
         camera.lookAt(controls.target);
     }
 }
 
 function onZoomOut(){
-    if(camera.position.y > cameraHeight / 3 * 2){       
+    if(camera.position.z > cameraHeight / 3 * 2){       
         if(!showDetail){
             block_objects.forEach(function(object){
                 //console.log(object);
@@ -918,15 +927,15 @@ function onZoomOut(){
                 css3dscene.remove( linkDocObj );
             }           
         }else{
-            camera.position.y = cameraHeight;
+            camera.position.z = cameraHeight;
             camera.position.x = 0;
-            camera.position.z = 0;
+            camera.position.y = 0;
             controls.target.set (0,0,0);
             camera.lookAt(controls.target);
             showDetail = false;
         }      
-    }else if(camera.position.y > cameraHeight / 3){
-        camera.position.y = cameraHeight / 3 * 2;
+    }else if(camera.position.z > cameraHeight / 3){
+        camera.position.z = cameraHeight / 3 * 2;
         camera.lookAt(controls.target);
     }
 }
