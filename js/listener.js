@@ -542,8 +542,8 @@ function showRelation(object){
         container.appendChild(element);
 
 
-    var num = Math.floor(Math.random() * 5) + 1;   
-    for (var i = 0; i < num; i++) {
+    //var num = Math.floor(Math.random() * 5) + 1;   
+    for (var i = 6; i < 12; i++) {
 
         var element = document.createElement( 'div' );
         element.style.height = '20px';
@@ -564,7 +564,7 @@ function showRelation(object){
         content.setAttribute('aria-expanded', "false");
         content.setAttribute('aria-controls', "linkedcollapse"+index);
         content.setAttribute('data-parent',"#doc_list");
-        content.textContent = docData[index].key;
+        content.textContent = docData[i].key;
 
         element.appendChild(content);
         container.appendChild(element);
