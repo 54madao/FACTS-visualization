@@ -1,3 +1,5 @@
+#FACTS-visualization
+
 ### Introduction
 This is a capstone project at the University of Washington Bothell. It's part of a group project to FACTS. It provides a hybrid visualization of source code files and traceability links to documentation artifacts(e.g. issues, requirements) of a software project.
 
