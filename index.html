@@ -1,1 +1,419 @@
-My Page
+
+<!DOCTYPE html>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+  
+    <head>
+        <title>three.js webgl - interactive - voxel painter</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="js/jstree/dist/themes/default/style.min.css" />
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.css"/>
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.theme.css"/>
+        <link rel="stylesheet" type="text/css" href="js/jQuery-ui-Slider-Pips-1.11.0/dist/jquery-ui-slider-pips.min.css">
+        <style type="text/css">
+            .list_left { 
+                font-weight: bold; 
+                font-size: 12px; 
+                z-index: 100;
+                width: 320px;
+                position: absolute; 
+                top: 0px; 
+                padding: 16px;
+                left: 0px;
+            }
+            .list_right { 
+                font-weight: bold; 
+                font-size: 12px; 
+                z-index: 100;
+                width: 250px;
+                position: absolute; 
+                top: 0px; 
+                padding: 16px;
+                right: 0px;
+            }
+            #info {
+                position: absolute;
+                top: 0px; 
+                padding: 10px;
+                text-align: center;
+                left: 350px;
+                right: 300px;
+                z-index: 100;
+            }
+            #changes{
+                border-right-style: groove;
+                border-bottom-style: groove;
+                overflow: auto;
+            }
+            #docs{
+                border-right-style: groove;
+                border-bottom-style: groove;
+                overflow: auto;
+            }
+            #collapse_list{
+                border-left-style: groove;
+                border-bottom-style: groove;
+                overflow: auto;
+            }
+            #slider-vertical{
+                top: 300px;
+                left: 400px;
+                position: absolute;
+            }
+
+            .element {
+                width: 120px;
+                height: 160px;
+                box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+                border: 1px solid rgba(127,255,255,0.25);
+                text-align: center;
+                cursor: default;
+            }
+
+            .element:hover {
+                box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+                border: 1px solid rgba(127,255,255,0.75);
+            }
+
+            .element .number {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                font-size: 12px;
+                color: rgba(127,255,255,0.75);
+            }
+
+            .element .symbol {
+                position: absolute;
+                top: 40px;
+                left: 0px;
+                right: 0px;
+                font-size: 60px;
+                font-weight: bold;
+                color: rgba(255,255,255,0.75);
+                text-shadow: 0 0 10px rgba(0,255,255,0.95);
+            }
+
+            .element .details {
+                position: absolute;
+                bottom: 15px;
+                left: 0px;
+                right: 0px;
+                font-size: 12px;
+                color: rgba(127,255,255,0.75);
+            }
+
+
+        </style>
+    </head>        
+
+    <body>
+       
+
+        <div class="list_left" > 
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs nav-justified" role="tablist" id="left_tab">
+                <li role="presentation" class="active"><a href="#changes" aria-controls="changes" role="tab" data-toggle="tab">Changed Files</a></li>
+                <li role="presentation"><a href="#docs" aria-controls="docs" role="tab" data-toggle="tab">Defects</a></li>
+            </ul>
+            
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="changes">
+                        
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="docs">
+                    <div class="panel-group" id="doc_list" role="tablist" aria-multiselectable="true">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="list_right">
+            
+            <div class="panel panel-default" id="right_tab">
+                
+                    <ul class="nav nav-tabs nav-justified" role="tablist" >
+                        <li role="presentation" class="active">
+                            <a role="tab" data-toggle="collapse" href="#collapse_list" aria-expanded="false" aria-controls="collapse_list">
+                                Related Defects
+                            </a>
+                        </li>
+                    </ul>
+                
+                <div id="collapse_list" class="panel-collapse collapse" role="tabpanel" aria-labelledby="relatedDocs_heading">
+                    <div class="panel-group" id="relatedDocs_list" role="tablist" aria-multiselectable="true">
+
+                    </div>
+                </div>
+            </div>
+        </div>-->
+        
+        <div id="info"><span id="version1"></span><span> | </span><span id="version2"></span>
+            <div id="circles-slider"></div>
+        </div>
+
+        <div id="main">
+
+        </div>
+        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
+        <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+        <script src="js/jstree/dist/jstree.min.js"></script>
+
+        <script src="js/jquery-ui-1.11.4/jquery-ui.js"></script>
+        <script src="js/jQuery-ui-Slider-Pips-1.11.0/dist/jquery-ui-slider-pips.min.js"></script>
+
+
+        <script src="js/three/three.js"></script>
+        <script src="js/three/js/controls/OrbitControls.js"></script>
+        <script src="js/three/js/libs/stats.min.js"></script>
+        <script src="js/three/js/geometries/TextGeometry.js"></script>
+        <script src="js/three/js/utils/FontUtils.js"></script>
+        <script src="js/three/js/libs/tween.min.js"></script>
+        <script src="js/three/js/renderers/CSS3DRenderer.js"></script>
+
+        <!--<script src="js/three/js/fonts/gentilis_bold.typeface.js"></script>
+        <script src="js/three/js/fonts/gentilis_regular.typeface.js"></script>
+        <script src="js/three/js/fonts/optimer_bold.typeface.js"></script>
+        <script src="js/three/js/fonts/optimer_regular.typeface.js"></script>
+        <script src="js/three/js/fonts/helvetiker_bold.typeface.js"></script>
+        <script src="js/three/js/fonts/helvetiker_regular.typeface.js"></script>
+        <script src="js/three/js/fonts/droid/droid_sans_regular.typeface.js"></script>
+        <script src="js/three/build/js/fonts/droid/droid_sans_bold.typeface.js"></script>
+        <script src="js/three/build/js/fonts/droid/droid_serif_regular.typeface.js"></script>
+        <script src="js/three/build/js/fonts/droid/droid_serif_bold.typeface.js"></script>-->
+
+        
+        <script type="text/javascript" src="js/listener.js"></script>
+        <script type="text/javascript" src="js/draw.js"></script>
+        <script type="text/javascript" src="js/loader.js"></script>
+        <!-- <script type="text/javascript" src="js/vis.js"></script>-->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
+
+        <script>
+            // main()
+            var container, stats, tween;
+            var camera, controls, scene, renderer, css3dscene, css3drenderer;
+            var building_objects = [], label_objects = [], block_objects = [], sprite_objects = [], method_objects = [], base_object, relatedObj = [], linkDocObj, linkCodeObj, plane, group;
+            var cameraPoint;
+            var raycaster = new THREE.Raycaster();
+            var mouse = new THREE.Vector2(),
+            offset = new THREE.Vector3(),
+            INTERSECTED, SELECTED;
+
+            var cameraPos0;
+            var cameraUp0;
+
+            var cameraHeight;
+
+            var onclick_color = 0x00ff00;
+            var onhover_color = 0xff00ff;
+            var onlink_color = 0xffff00;
+            //pointer line
+            var rightline;
+            var leftline;
+            var direct_line_material = new THREE.LineBasicMaterial({
+                color: 0x000000
+            });
+            var scale_max = Number.MIN_VALUE;
+            var scale_min = Number.MAX_VALUE;
+            var scale_size = 100;
+
+            var building_border = 5;
+            var block_border = 35;
+            var label_border = 20;
+            var building_scale =10;
+            var text_scale = 30;
+            var fontSize = 40;
+
+            var fileData, linkData, docData, vData, globle_postionts;
+
+            var showDetail = false;
+
+            vData = loadVersions();
+            //fileData = loadFiles();
+            
+            
+            //console.log(JSON.stringify(fileData, null, 4));
+            init();
+            animate();
+            //start()
+            function init() {
+
+                // HTML DOC
+                container = document.getElementById("main");
+                
+                //document.body.appendChild( container );
+
+                // create camera
+                camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+                camera.position.z = 1500;
+                camera.up.set(0,0,1);
+                //camera.lookAt( new THREE.Vector3() );
+                cameraPos0 = camera.position.clone();
+                cameraUp0 = camera.up.clone();
+                // create scene and add globle light
+                scene = new THREE.Scene();
+                scene.add( new THREE.AmbientLight( 0x505050 ) );
+
+                css3dscene = new THREE.Scene();
+
+                // create specific light
+                var light = new THREE.SpotLight( 0xffffff, 1.5 );
+                light.position.set( 0, 500, 2000 );
+                light.castShadow = true;
+                light.shadowCameraNear = 200;
+                light.shadowCameraFar = camera.far;
+                light.shadowCameraFov = 50;
+                light.shadowBias = -0.00022;
+                light.shadowMapWidth = 2048;
+                light.shadowMapHeight = 2048;
+                scene.add( light );
+
+                //createVerticalSlider();
+                //var size = 500, step = 50; //calculated based on size of dataset
+                // create a base
+                //createBase(fileData);
+
+                //createCity(fileData);
+                //createSlider();
+
+                // if(fileData != null){
+                //     globle_postionts = calculatePositions(fileData);
+                //     createLabels(globle_postionts[0], globle_postionts[3][0].offset);
+                //     createBlocks(globle_postionts[1], globle_postionts[3][0].offset);
+                //     createBuildings(globle_postionts[2], globle_postionts[3][0].offset);
+                //     cameraHeight = createBase(globle_postionts[3]) * 2 / 14 * 14;
+                //     camera.position.y = cameraHeight;
+
+                //     for(var key in label_objects){
+                //         css3dscene.add(label_objects[key]);
+                //     }
+                // }
+                
+                // plane = new THREE.Mesh(
+                //     new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
+                //     new THREE.MeshBasicMaterial( { visible: false } )
+                // );
+                // scene.add( plane );
+
+                //var CONTAINER_STYLE = getComputedStyle(container,null);
+                //var CONTAINER_WIDTH = parseInt(CONTAINER_STYLE.getPropertyValue('width'));
+
+                // container.style.width = window.innerWidth;
+                // container.style.height = window.innerHeight;
+                // container.style.backgroundColor="#00FF00";
+
+
+                //create renderer
+                renderer = new THREE.WebGLRenderer( { antialias: true } );
+                renderer.setClearColor(0xf0f0f0, 1);
+                renderer.setPixelRatio( window.devicePixelRatio );
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                //renderer.setSize( CONTAINER_WIDTH, window.innerHeight );
+                // renderer.sortObjects = false;
+                // renderer.shadowMap.enabled = true;
+                // renderer.shadowMap.type = THREE.PCFShadowMap;
+                //renderer.domElement.style.position = "absolute";
+                container.appendChild( renderer.domElement );
+                //container.insertBefore(renderer.domElement, container.firstChild);
+                renderer.domElement.style.zIndex = 1;
+                //renderer.domElement.style.backgroundColor="#00FF00";
+                //document.body.appendChild(renderer.domElement);
+
+                //css3drenderer
+                css3drenderer = new THREE.CSS3DRenderer();
+                css3drenderer.setSize( window.innerWidth, window.innerHeight );
+                css3drenderer.domElement.style.position = 'absolute';
+                //css3drenderer.domElement.style.right = "100px";
+                //css3drenderer.domElement.style.right = "200 px";
+                container.appendChild( css3drenderer.domElement );
+                css3drenderer.domElement.style.top = 0;
+                css3drenderer.domElement.style.zIndex = 0;
+                //css3drenderer.domElement.style.backgroundColor="#00FF00";
+                //document.body.appendChild(css3drenderer.domElement);
+
+
+
+
+
+                // create view control
+                controls = new THREE.OrbitControls(this.camera);
+                controls.target.set (0,0,0);
+                controls.maxDistance = 1500;
+
+
+
+
+                // add listener
+                document.addEventListener( 'mousemove', onDocumentMouseMove, false );   
+                window.addEventListener( 'resize', onWindowResize, false );
+                document.addEventListener( 'click', onDocumentClick, false );
+                //$('#3d').on('click', onDocumentClick);
+                document.addEventListener( 'dblclick', onDocumentDblClick, false );
+                window.addEventListener( 'keydown', onKeyDown, false );
+                document.addEventListener( 'mousewheel', onMouseWheel, false );
+                //window.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
+                
+                // var dir = canvasPosition.sub( camera.position ).normalize();
+                // var distance = - camera.position.z / dir.z;
+                // var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
+                // paintPoint(pos);
+                // var particleMaterialGreen = new THREE.SpriteMaterial( {
+                //     color: 0x0000FF,
+                // } );
+                // cameraPoint = new THREE.Sprite( particleMaterialGreen );
+                // var cameraPosition = new THREE.Vector3(camera.x + 10, camera.y + 10, camera.z + 10);
+                // cameraPoint.scale.x = cameraPoint.scale.y = 50;
+                // cameraPoint.position.copy(cameraPosition);
+                // scene.add(cameraPoint);
+                // d3.json("miserables.json", function(error, root){
+                //     console.log('!!!');
+                // });
+            }
+
+                    //
+
+            function animate() {
+
+                requestAnimationFrame( animate );
+
+                render();
+
+
+            }
+
+            function render() {
+                TWEEN.update();
+                css3drenderer.render( css3dscene, camera);
+                renderer.render( scene, camera );
+                //controls.update();
+                //console.log(cameraHeight);
+                //console.log("x:" + camera.position.x + ", y:" + camera.position.y + ", z" + camera.position.z);
+            
+
+                // //to canvas space
+                // var worldPosition = $('#changes').position();
+                // var px = worldPosition.left + $('#changes').width();
+                // var py = worldPosition.top + $('#changes').height() / 2;
+                
+                // //console.log("position: " + px + ", "+ py);
+                // xx = ( 168 / window.innerWidth ) * 2 - 1;
+                // yy = - ( 44 / window.innerHeight ) * 2 + 1;
+                // //console.log("position: " + xx + ", "+ yy);
+                // var tmp = new THREE.Vector3(xx, yy, 0.5);
+                // tmp.unproject(camera).sub( camera.position ).normalize();
+                // //console.log("position: " + tmp.x + ", "+ tmp.y + ", "+ tmp.z);
+                // paintPoint(tmp);
+            }
+            
+        </script>
+
+    </body>
+ 
+</html>
